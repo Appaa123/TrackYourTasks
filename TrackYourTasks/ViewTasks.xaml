@@ -1,0 +1,41 @@
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TrackYourTasks.ViewTasks">
+
+    <VerticalStackLayout Padding="20">
+        <CollectionView x:Name="TasksList">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="10" Margin="5" BorderColor="Gray">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Title}" FontAttributes="Bold"/>
+                            <Label Text="{Binding Description}" FontSize="Small"/>
+                            <Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy}'}"/>
+
+                            <HorizontalStackLayout>
+                                <Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy}'}"
+                               VerticalOptions="Center" />
+
+                                <!-- Edit button -->
+                                <ImageButton Source="edit.png"
+                                     WidthRequest="24"
+                                     HeightRequest="24"
+                                     BackgroundColor="Transparent"
+                                     HorizontalOptions="EndAndExpand"
+                                     Clicked="OnEditTaskClicked"/>
+
+                                <!-- Delete button -->
+                                <ImageButton Source="delete.png"
+                                     WidthRequest="24"
+                                     HeightRequest="24"
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnDeleteTaskClicked"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrackYourTasks.TasksPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+
+            <Label
+                Text="Select your tasks"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <Label
+                Text="Excecise"
+                Style="{StaticResource SubHeadline}"
+                SemanticProperties.HeadingLevel="Level2"
+                SemanticProperties.Description="Welcome to Track Your Tasks App!!" />
+
+            <Button 
+			x:Name="YesBtn"
+			Text="Yes"
+            Clicked="OnYesClicked"
+            BackgroundColor="LightGreen"/>
+            
+            <Button
+			x:Name="NoBtn"
+			Text="No"
+            Clicked="OnNoClicked"
+            BackgroundColor="LightCoral"/>
+            
+            
+            
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

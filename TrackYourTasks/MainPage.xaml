@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrackYourTasks.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+            <Image
+                Source="dotnet_bot.png"
+                HeightRequest="185"
+                Aspect="AspectFit"
+                SemanticProperties.Description="TrackYourTasks App" />
+
+            <Label
+                Text="Lets Track our Daily tasks!"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <Label
+                Text="Welcome to TrackYourTasks App"
+                Style="{StaticResource SubHeadline}"
+                SemanticProperties.HeadingLevel="Level2"
+                SemanticProperties.Description="Welcome to Track Your Tasks App!!" />
+
+            <Button
+                x:Name="CounterBtn"
+                Text="Click me" 
+                SemanticProperties.Hint="Counts the number of times you click"
+                Clicked="OnCounterClicked"
+                HorizontalOptions="Fill" />
+            <Button
+                x:Name="StatusTaskBtn"
+                Text="Check the status a Task" 
+                SemanticProperties.Hint="Counts the number of times you click"
+                Clicked="OnTaskButtonClicked"
+                HorizontalOptions="Fill" />
+            <Button
+                x:Name="CreateTaskBtn"
+                Text="Create a Task" 
+                SemanticProperties.Hint="Creates the task to start tracking"
+                Clicked="OnCreateTaskButtonClicked"
+                HorizontalOptions="Fill" />
+            <Button
+                x:Name="ViewTaskBtn"
+                Text="View Tasks" 
+                SemanticProperties.Hint="View the created tasks"
+                Clicked="OnViewTaskButtonClicked"
+                HorizontalOptions="Fill" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
