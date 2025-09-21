@@ -4,35 +4,36 @@
     x:Class="TrackYourTasks.CreateTasks"
     BackgroundImageSource="background_theme.jpg">
 
-	<VerticalStackLayout Padding="20" VerticalOptions="CenterAndExpand">
-        <Image Source="notepad.PNG"
+    <ScrollView>
+        <VerticalStackLayout Padding="20">
+            <Image Source="notepad.PNG"
                WidthRequest="100"
                HeightRequest="100"
                Aspect="AspectFit"
                HorizontalOptions="Center"
                Grid.Row="0"/>
-        <Entry x:Name="TitleEntry" Placeholder="Task Title" Margin="30" PlaceholderColor="Gray" />
-        <Editor x:Name="DescEntry" 
+            <Entry x:Name="TitleEntry" Placeholder="Task Title" Margin="30" PlaceholderColor="Gray" />
+            <Editor x:Name="DescEntry" 
                 Placeholder="Task Description"
                 Margin="30"
                 AutoSize="TextChanges"
                 PlaceholderColor="Grey"/>
-        <Button x:Name="AddTaskButton" Text="Add Task" Clicked="OnAddTaskClicked" Margin="30"/>
+            <Button x:Name="AddTaskButton" Text="Add Task" Clicked="OnAddTaskClicked" Margin="30"/>
 
-		<CollectionView x:Name="TasksList"
-                    ItemsSource="{Binding Tasks}"
-                    VerticalOptions="FillAndExpand">
-			<CollectionView.ItemTemplate>
-				<DataTemplate>
-					<Border Stroke="Gray" StrokeThickness="1" Margin="5" Padding="10">
-						<VerticalStackLayout>
-							<Label Text="{Binding Title}" FontAttributes="Bold"/>
-							<Label Text="{Binding Description}" FontSize="Small"/>
-							<Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy}'}"/>
-						</VerticalStackLayout>
-					</Border>
-				</DataTemplate>
-			</CollectionView.ItemTemplate>
-		</CollectionView>
-	</VerticalStackLayout>
+            <CollectionView x:Name="TasksList"
+                    ItemsSource="{Binding Tasks}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="Gray" StrokeThickness="1" Margin="5" Padding="10">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" FontAttributes="Bold"/>
+                                <Label Text="{Binding Description}" FontSize="Small"/>
+                                <Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy}'}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

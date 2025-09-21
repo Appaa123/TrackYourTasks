@@ -9,7 +9,7 @@
             Padding="30,0"
             Spacing="25">
             <Image
-                Source="trackyourtaskslogo.jpg"
+                Source="trackyourtasklogo.png"
                 HeightRequest="185"
                 Aspect="AspectFit"
                 SemanticProperties.Description="TrackYourTasks App" />
@@ -24,13 +24,6 @@
                 Style="{StaticResource SubHeadline}"
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="Welcome to Track Your Tasks App!!" />
-
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
             <Button
                 x:Name="StatusTaskBtn"
                 Text="Check the status a Task" 

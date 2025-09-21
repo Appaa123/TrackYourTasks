@@ -6,7 +6,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <Style TargetType="ContentPage">
-                <Setter Property="BackgroundImageSource" Value="background_theme.jpg" />
+                <Setter Property="BackgroundImageSource" Value="trackyourtasklogo.png" />
             </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
