@@ -34,6 +34,12 @@ namespace TrackYourTasks
             AddTaskButton.Text = "Update Task";
         }
 
+        private async void OnCancelTaskClicked(object sender, EventArgs e)
+        {
+
+            await Navigation.PushAsync(new MainPage());
+
+        }
         private async void OnAddTaskClicked(object sender, EventArgs e)
         {
             if (_taskBeingEdited == null)

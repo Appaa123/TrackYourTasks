@@ -3,68 +3,66 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="TrackYourTasks.ViewTasks"
     BackgroundImageSource="background_theme.jpg">
-    <!--ACECD1-->
-    <!--ACDCEC-->
-    <ScrollView>
-        <VerticalStackLayout Padding="20">
-            <CollectionView x:Name="TasksList">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Padding="0" Margin="20">
-                            <Grid ColumnDefinitions="*,Auto,Auto"
-                          Padding="10"
-                          BackgroundColor="PapayaWhip">
 
-                                <!-- Task Info (left side) -->
-                                <VerticalStackLayout Grid.Column="0" Spacing="10">
-                                    <HorizontalStackLayout>
-                                        <Label Text="{Binding Title}" FontAttributes="Bold" 
-                                       HorizontalTextAlignment="Center" 
-                                       VerticalTextAlignment="Center"
-                                       HeightRequest="40"
-                                       WidthRequest="300" 
-                                       BackgroundColor="#ACDCEC"
-                                       />
-                                    </HorizontalStackLayout>
-                                    <Label Text="{Binding Description}"
-                                        HorizontalTextAlignment="Center" 
-                                       VerticalTextAlignment="Center"
-                                       FontSize="Small"/>
-                                    <Label Text="{Binding CreatedAt,StringFormat='{0:dd MMM yyyy}'}"
-                                       HorizontalTextAlignment="Center" 
-                                       VerticalTextAlignment="Center"/>
-                                </VerticalStackLayout>
+    <!-- Use Grid to allow CollectionView to scroll and Back button fixed -->
+    <Grid RowDefinitions="*,Auto" Padding="20">
 
-                                <!-- Edit Button (right side) -->
-                                <ImageButton Grid.Column="1"
-                                 Source="edit.png"
-                                 WidthRequest="32"
-                                 HeightRequest="32"
-                                 BackgroundColor="Transparent"
-                                 HorizontalOptions="End"
-                                 Aspect="AspectFit"                                 
-                                 Clicked="OnEditTaskClicked"
-                                  Margin="10,35,10,0"
-                                         />
+        <!-- CollectionView scrollable automatically -->
+        <CollectionView x:Name="TasksList"
+                        VerticalOptions="Fill"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="LightGray"
+                            StrokeShape="RoundRectangle 20"
+                            StrokeThickness="2"
+                            Background="PapayaWhip"
+                            Margin="10">
+                        <VerticalStackLayout Padding="10" Spacing="10">
 
-                                <!-- Delete Button (right side, next to Edit) -->
-                                <ImageButton Grid.Column="2"
-                             Source="delete.png"
-                             WidthRequest="32"
-                             HeightRequest="32"
-                             BackgroundColor="Transparent"
-                             HorizontalOptions="End"
-                             Clicked="OnDeleteTaskClicked"
-                             Margin="10,35,10,0"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-            <Button x:Name="Back" 
+                            <Label Text="{Binding Title}" FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" 
+                                   VerticalTextAlignment="Center"
+                                   HeightRequest="40"
+                                   BackgroundColor="#ACDCEC"/>
+
+                            <Label Text="{Binding Description}"
+                                   HorizontalTextAlignment="Center" 
+                                   VerticalTextAlignment="Center"
+                                   FontSize="Small"/>
+
+                            <Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy}'}"
+                                   HorizontalTextAlignment="Center" 
+                                   VerticalTextAlignment="Center"/>
+
+                            <!-- Buttons stacked vertically -->
+                            <Button Text="Edit"
+                                    FontAttributes="Bold"
+                                    HorizontalOptions="Center"
+                                    HeightRequest="40"
+                                    WidthRequest="300"
+                                    BackgroundColor="Orange"
+                                    Clicked="OnEditTaskClicked"/>
+
+                            <Button Text="Delete"
+                                    FontAttributes="Bold"
+                                    HorizontalOptions="Center"
+                                    HeightRequest="40"
+                                    WidthRequest="300"
+                                    BackgroundColor="Red"
+                                    Clicked="OnDeleteTaskClicked"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Back button at bottom -->
+        <Button x:Name="Back" 
                 Text="Back"
-                Margin="40"
-                BackgroundColor="#FFB038"/>
-        </VerticalStackLayout>
-    </ScrollView>
+                BackgroundColor="#FFB038"
+                Clicked="OnBackTaskClicked"
+                Grid.Row="1"
+                Margin="0,10,0,0"/>
+    </Grid>
 </ContentPage>

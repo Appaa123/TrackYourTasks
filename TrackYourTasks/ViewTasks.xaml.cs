@@ -34,7 +34,7 @@ namespace TrackYourTasks
 
         private async void OnDeleteTaskClicked(object sender, EventArgs e)
         {
-            if (sender is ImageButton button && button.BindingContext is TrackTask task)
+            if (sender is Button button && button.BindingContext is TrackTask task)
             {
                 _db.Tasks.Remove(task);
                 _db.SaveChanges();
@@ -46,10 +46,16 @@ namespace TrackYourTasks
         }
         private async void OnEditTaskClicked(object sender, EventArgs e)
         {
-            if (sender is ImageButton button && button.BindingContext is TrackTask task)
+            if (sender is Button button && button.BindingContext is TrackTask task)
             {
                 await Navigation.PushAsync(new CreateTasks(_db, task));
             }
+        }
+        private async void OnBackTaskClicked(object sender, EventArgs e)
+        {
+
+            await Navigation.PushAsync(new MainPage());
+
         }
 
 

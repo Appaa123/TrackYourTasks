@@ -7,24 +7,26 @@
     <ScrollView>
         <VerticalStackLayout
             Padding="30,0"
-            Spacing="25">
-            <Image
+            Margin="30"
+            Spacing="45">
+            <!--<Image
                 Source="trackyourtasklogo.png"
                 HeightRequest="185"
                 Aspect="AspectFit"
                 SemanticProperties.Description="TrackYourTasks App"
-                />
+                />-->
 
             <Label
                 Text="Lets Track our Daily tasks!"
                 Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+                SemanticProperties.HeadingLevel="Level1"
+                FontFamily="Open Sans"/>
 
             <Label
-                Text="Welcome to TrackYourTasks App"
-                Style="{StaticResource SubHeadline}"
+                Text="Try creating a new task today!!"
+                Style="{StaticResource Footerline}"
                 SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to Track Your Tasks App!!" />
+                SemanticProperties.Description="Try creating a new task today!!" />
             <Button
                 x:Name="StatusTaskBtn"
                 Text="Check the status a Task" 
@@ -46,7 +48,13 @@
                 Clicked="OnViewTaskButtonClicked"
                 HorizontalOptions="Fill"
                 BackgroundColor="#FFB038"/>
+
+            <Label
+                Text="Developed By - Venkat Appaa Rao"
+                FontFamily="Open Sans"
+                Style="{StaticResource Footerline}"
+                HorizontalOptions="Fill"
+                SemanticProperties.Description="Developed By" />
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>
