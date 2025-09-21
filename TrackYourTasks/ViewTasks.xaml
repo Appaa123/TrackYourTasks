@@ -51,6 +51,31 @@
                                     WidthRequest="300"
                                     BackgroundColor="Red"
                                     Clicked="OnDeleteTaskClicked"/>
+
+                            <!-- Edit Button (right side) -->
+                            <!--
+                                <ImageButton Grid.Column="1"
+                                 Source="edit.png"
+                                 WidthRequest="32"
+                                 HeightRequest="32"
+                                 BackgroundColor="Transparent"
+                                 HorizontalOptions="End"
+                                 Aspect="AspectFit"                                 
+                                 Clicked="OnEditTaskClicked"
+                                  Margin="10,35,10,0"
+                                         />
+
+                                -->
+                            <!-- Delete Button (right side, next to Edit) -->
+                            <!--
+                                <ImageButton Grid.Column="2"
+                             Source="delete.png"
+                             WidthRequest="32"
+                             HeightRequest="32"
+                             BackgroundColor="Transparent"
+                             HorizontalOptions="End"
+                             Clicked="OnDeleteTaskClicked"
+                             Margin="10,35,10,0"/>-->
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>
