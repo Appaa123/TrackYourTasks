@@ -12,7 +12,8 @@
                 Source="trackyourtasklogo.png"
                 HeightRequest="185"
                 Aspect="AspectFit"
-                SemanticProperties.Description="TrackYourTasks App" />
+                SemanticProperties.Description="TrackYourTasks App"
+                />
 
             <Label
                 Text="Lets Track our Daily tasks!"
@@ -29,19 +30,22 @@
                 Text="Check the status a Task" 
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnTaskButtonClicked"
-                HorizontalOptions="Fill" />
+                HorizontalOptions="Fill"
+                BackgroundColor="#FFB038"/>
             <Button
                 x:Name="CreateTaskBtn"
                 Text="Create a Task" 
                 SemanticProperties.Hint="Creates the task to start tracking"
                 Clicked="OnCreateTaskButtonClicked"
-                HorizontalOptions="Fill" />
+                HorizontalOptions="Fill"
+                BackgroundColor="#FFB038"/>
             <Button
                 x:Name="ViewTaskBtn"
                 Text="View Tasks" 
                 SemanticProperties.Hint="View the created tasks"
                 Clicked="OnViewTaskButtonClicked"
-                HorizontalOptions="Fill" />
+                HorizontalOptions="Fill"
+                BackgroundColor="#FFB038"/>
         </VerticalStackLayout>
     </ScrollView>
 

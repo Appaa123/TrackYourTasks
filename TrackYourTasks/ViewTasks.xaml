@@ -64,7 +64,7 @@
             <Button x:Name="Back" 
                 Text="Back"
                 Margin="40"
-                BackgroundColor="Coral"/>
+                BackgroundColor="#FFB038"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
