@@ -1,41 +1,70 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="TrackYourTasks.ViewTasks">
+    x:Class="TrackYourTasks.ViewTasks"
+    BackgroundImageSource="background_theme.jpg">
+    <!--ACECD1-->
+    <!--ACDCEC-->
+    <ScrollView>
+        <VerticalStackLayout Padding="20">
+            <CollectionView x:Name="TasksList">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="0" Margin="20">
+                            <Grid ColumnDefinitions="*,Auto,Auto"
+                          Padding="10"
+                          BackgroundColor="PapayaWhip">
 
-    <VerticalStackLayout Padding="20">
-        <CollectionView x:Name="TasksList">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Padding="10" Margin="5" BorderColor="Gray">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Title}" FontAttributes="Bold"/>
-                            <Label Text="{Binding Description}" FontSize="Small"/>
-                            <Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy}'}"/>
+                                <!-- Task Info (left side) -->
+                                <VerticalStackLayout Grid.Column="0" Spacing="10">
+                                    <HorizontalStackLayout>
+                                        <Label Text="{Binding Title}" FontAttributes="Bold" 
+                                       HorizontalTextAlignment="Center" 
+                                       VerticalTextAlignment="Center"
+                                       HeightRequest="40"
+                                       WidthRequest="300" 
+                                       BackgroundColor="#ACDCEC"
+                                       />
+                                    </HorizontalStackLayout>
+                                    <Label Text="{Binding Description}"
+                                        HorizontalTextAlignment="Center" 
+                                       VerticalTextAlignment="Center"
+                                       FontSize="Small"/>
+                                    <Label Text="{Binding CreatedAt,StringFormat='{0:dd MMM yyyy}'}"
+                                       HorizontalTextAlignment="Center" 
+                                       VerticalTextAlignment="Center"/>
+                                </VerticalStackLayout>
 
-                            <HorizontalStackLayout>
-                                <Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy}'}"
-                               VerticalOptions="Center" />
+                                <!-- Edit Button (right side) -->
+                                <ImageButton Grid.Column="1"
+                                 Source="edit.png"
+                                 WidthRequest="32"
+                                 HeightRequest="32"
+                                 BackgroundColor="Transparent"
+                                 HorizontalOptions="End"
+                                 Aspect="AspectFit"                                 
+                                 Clicked="OnEditTaskClicked"
+                                  Margin="10,35,10,0"
+                                         />
 
-                                <!-- Edit button -->
-                                <ImageButton Source="edit.png"
-                                     WidthRequest="24"
-                                     HeightRequest="24"
-                                     BackgroundColor="Transparent"
-                                     HorizontalOptions="EndAndExpand"
-                                     Clicked="OnEditTaskClicked"/>
-
-                                <!-- Delete button -->
-                                <ImageButton Source="delete.png"
-                                     WidthRequest="24"
-                                     HeightRequest="24"
-                                     BackgroundColor="Transparent"
-                                     Clicked="OnDeleteTaskClicked"/>
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </VerticalStackLayout>
+                                <!-- Delete Button (right side, next to Edit) -->
+                                <ImageButton Grid.Column="2"
+                             Source="delete.png"
+                             WidthRequest="32"
+                             HeightRequest="32"
+                             BackgroundColor="Transparent"
+                             HorizontalOptions="End"
+                             Clicked="OnDeleteTaskClicked"
+                             Margin="10,35,10,0"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Button x:Name="Back" 
+                Text="Back"
+                Margin="40"
+                BackgroundColor="Coral"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
