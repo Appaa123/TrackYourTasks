@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TrackYourTasks.Data;
 using TrackYourTasks.Interfaces;
 using TrackYourTasks.Models;
+using TrackYourTasks.Services;
 
 namespace TrackYourTasks
 {
@@ -18,14 +19,15 @@ namespace TrackYourTasks
         private INotificationService _notificationService;
 
         // Constructor for "create new task"
-        public CreateTasks(AppDbContext db)
+        public CreateTasks(AppDbContext db,INotificationService notificationService)
         {
             InitializeComponent();
             _db = db;
+            _notificationService = notificationService;
         }
 
         // Constructor for "edit existing task"
-        public CreateTasks(AppDbContext db, TrackTask taskToEdit) : this(db)
+        public CreateTasks(AppDbContext db,INotificationService notificationService, TrackTask taskToEdit) : this(db, notificationService)
         {
             _taskBeingEdited = taskToEdit;
 

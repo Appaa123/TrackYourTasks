@@ -6,13 +6,13 @@ namespace TrackYourTasks
     public partial class App : Application
     {
         private readonly INotificationService _notificationService;
-        public App()
+        public App(INotificationService notificationService)
         {
-            InitializeComponent();
+            InitializeComponent(); 
 
             using var db = new AppDbContext();
             db.Database.EnsureCreated();
-
+            _notificationService = notificationService;
             //MainPage = new AppShell();
         }
 

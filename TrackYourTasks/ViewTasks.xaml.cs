@@ -9,6 +9,7 @@ using TrackYourTasks.Data;
 using TrackYourTasks.Interfaces;
 using TrackYourTasks.Models;
 using TrackYourTasks.Popups;
+using TrackYourTasks.Services;
 
 namespace TrackYourTasks
 {
@@ -16,10 +17,11 @@ namespace TrackYourTasks
     {
         private readonly AppDbContext _db;
         private readonly INotificationService _notificationService;
-        public ViewTasks(AppDbContext db)
+        public ViewTasks(AppDbContext db, INotificationService notificationService)
         {
             InitializeComponent();
             _db = db;
+            _notificationService = notificationService;
             LoadTasks();
         }
 
@@ -55,7 +57,7 @@ namespace TrackYourTasks
         {
             if (sender is Button button && button.BindingContext is TrackTask task)
             {
-                await Navigation.PushAsync(new CreateTasks(_db, task));
+                await Navigation.PushAsync(new CreateTasks(_db, _notificationService, task));
             }
         }
         private async void OnBackTaskClicked(object sender, EventArgs e)

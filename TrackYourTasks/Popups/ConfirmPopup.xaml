@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <toolkit:Popup
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -12,14 +11,28 @@
         Padding="20"
         HasShadow="True"
         VerticalOptions="Center"
-        HorizontalOptions="Center">
+        HorizontalOptions="Center"
+        BackgroundColor="{AppThemeBinding Light=White, Dark=#333333}">
 
         <VerticalStackLayout Spacing="15">
-            <Label Text="Are you sure?" FontSize="18" HorizontalOptions="Center"/>
+            <Label 
+                Text="Are you sure?"
+                FontSize="18"
+                HorizontalOptions="Center"
+                TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
             <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
-                <Button Text="Yes" Clicked="OnYesClicked" />
-                <Button Text="No" Clicked="OnNoClicked" />
+                <Button 
+                    Text="Yes"
+                    Clicked="OnYesClicked"
+                    TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                    BackgroundColor="{AppThemeBinding Light=#e0e0e0, Dark=#444444}" />
+
+                <Button 
+                    Text="No"
+                    Clicked="OnNoClicked"
+                    TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                    BackgroundColor="{AppThemeBinding Light=#e0e0e0, Dark=#444444}" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </Frame>
