@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    x:Class="TrackYourTasks.Popups.ConfirmPopup">
+
+    <Frame
+        WidthRequest="300"
+        HeightRequest="200"
+        CornerRadius="20"
+        Padding="20"
+        HasShadow="True"
+        VerticalOptions="Center"
+        HorizontalOptions="Center">
+
+        <VerticalStackLayout Spacing="15">
+            <Label Text="Are you sure?" FontSize="18" HorizontalOptions="Center"/>
+
+            <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                <Button Text="Yes" Clicked="OnYesClicked" />
+                <Button Text="No" Clicked="OnNoClicked" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </Frame>
+</toolkit:Popup>

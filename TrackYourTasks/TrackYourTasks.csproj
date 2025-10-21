@@ -65,7 +65,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#ACDCEC" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" Color="#ACDCEC" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.png" Color="#ACDCEC" BaseSize="128,128" />
@@ -98,6 +98,9 @@
 
 	<ItemGroup>
 		<MauiXaml Update="CreateTasks.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Popups\ConfirmPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="SecondPage.xaml">

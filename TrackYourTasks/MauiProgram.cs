@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using TrackYourTasks.Data;
+using TrackYourTasks.Interfaces;
+using TrackYourTasks.Services;
 
 namespace TrackYourTasks
 {
@@ -19,6 +21,7 @@ namespace TrackYourTasks
             builder.Services.AddDbContext<AppDbContext>();
             builder.UseMauiApp<App>()
                 .UseMauiCommunityToolkit();
+            builder.Services.AddSingleton<INotificationService, NotificationService>();
 
             using (var db = new AppDbContext())
             {

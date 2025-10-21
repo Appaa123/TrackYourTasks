@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrackYourTasks.Data;
+using TrackYourTasks.Interfaces;
 using TrackYourTasks.Models;
 
 namespace TrackYourTasks
@@ -14,6 +15,7 @@ namespace TrackYourTasks
     {
         private readonly AppDbContext _db;
         private TrackTask _taskBeingEdited;
+        private INotificationService _notificationService;
 
         // Constructor for "create new task"
         public CreateTasks(AppDbContext db)
@@ -37,7 +39,7 @@ namespace TrackYourTasks
         private async void OnCancelTaskClicked(object sender, EventArgs e)
         {
 
-            await Navigation.PushAsync(new MainPage());
+            await Navigation.PushAsync(new MainPage(_notificationService));
 
         }
         private async void OnAddTaskClicked(object sender, EventArgs e)

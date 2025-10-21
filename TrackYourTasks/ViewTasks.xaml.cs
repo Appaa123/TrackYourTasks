@@ -6,14 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrackYourTasks.Data;
+using TrackYourTasks.Interfaces;
 using TrackYourTasks.Models;
+using TrackYourTasks.Popups;
 
 namespace TrackYourTasks
 {
     public partial class ViewTasks : ContentPage
     {
         private readonly AppDbContext _db;
-
+        private readonly INotificationService _notificationService;
         public ViewTasks(AppDbContext db)
         {
             InitializeComponent();
@@ -34,14 +36,19 @@ namespace TrackYourTasks
 
         private async void OnDeleteTaskClicked(object sender, EventArgs e)
         {
-            if (sender is Button button && button.BindingContext is TrackTask task)
+            bool isConfirmed = await OnDeleteButtonClickedConfirmation(sender, e);
+
+            if (isConfirmed)
             {
-                _db.Tasks.Remove(task);
-                _db.SaveChanges();
-                LoadTasks();
-                // ✅ Show success toast
-                var toast = Toast.Make("Task deleted successfully!", ToastDuration.Short, 14);
-                await toast.Show();
+                if (sender is Button button && button.BindingContext is TrackTask task)
+                {
+                    _db.Tasks.Remove(task);
+                    _db.SaveChanges();
+                    LoadTasks();
+                    // ✅ Show success toast
+                    var toast = Toast.Make("Task deleted successfully!", ToastDuration.Short, 14);
+                    await toast.Show();
+                }
             }
         }
         private async void OnEditTaskClicked(object sender, EventArgs e)
@@ -54,8 +61,26 @@ namespace TrackYourTasks
         private async void OnBackTaskClicked(object sender, EventArgs e)
         {
 
-            await Navigation.PushAsync(new MainPage());
+            await Navigation.PushAsync(new MainPage(_notificationService));
 
+        }
+
+        private async Task<bool> OnDeleteButtonClickedConfirmation(object sender, EventArgs e)
+        {
+            var popup = new ConfirmPopup();
+            bool result = await popup.ShowAsync(this); // ✅ Custom ShowAsync to get result
+
+            if (result)
+            {
+                return true;
+                //await DisplayAlert("Confirmed", "Action executed.", "OK");
+                // Proceed with the confirmed action
+            }
+            else
+            {
+                return false;
+                //await DisplayAlert("Cancelled", "Action was cancelled.", "OK");
+            }
         }
 
 
