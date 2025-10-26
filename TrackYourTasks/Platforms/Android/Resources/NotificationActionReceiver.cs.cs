@@ -27,6 +27,7 @@ namespace TrackYourTasks.Platforms.Android.Services
                 {
                     var label = intent.GetStringExtra("NotificationLabel");
                     editor.PutString("UserNotificationLabel", label);
+                    Console.WriteLine("NotificationLabel-NotificationActionReceiver : " + label);
                 }
                 editor.Apply(); // saves asynchronously
                 Toast.MakeText(context, "You selected YES", ToastLength.Short).Show();

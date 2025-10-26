@@ -5,21 +5,35 @@
              BackgroundImageSource="background_theme.jpg">
 
     <ScrollView>
-        <VerticalStackLayout
+        <CollectionView x:Name="UserData"
+                    ItemsSource="{Binding Tasks}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="Gray" StrokeThickness="1" Margin="5" Padding="10">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding userCount}" FontAttributes="Bold"/>
+                            <Label Text="{StaticResource Headline}" FontSize="Small"/>
+                            <Label Text="{Binding UserClickedYes}"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <!--<VerticalStackLayout
             Padding="30,0"
             Spacing="25">
 
             <Label
-                Text= "{Binding displayValue}"
+                Text= "{Binding userCount}"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1"
                 />
 
             <Label
-                Text="{Binding userNotificationLabel}"
+                Text="{Binding userLabel}"
                 Style="{StaticResource SubHeadline}"
                 SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to Track Your Tasks App!!" />
+                SemanticProperties.Description="Welcome to Track Your Tasks App!!" />-->
 
             <!--<Button 
 			x:Name="YesBtn"
@@ -35,7 +49,7 @@
             
             
             
-        </VerticalStackLayout>
+        <!--</VerticalStackLayout>-->
     </ScrollView>
 
 </ContentPage>

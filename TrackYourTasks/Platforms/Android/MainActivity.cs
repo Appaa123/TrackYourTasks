@@ -15,6 +15,8 @@ namespace TrackYourTasks
             ScheduleAlarm(context, 9, 0, "Excercise");
             ScheduleAlarm(context, 13, 0, "Food");
             ScheduleAlarm(context, 21, 0, "Sleep");
+            ScheduleAlarm(context, 23, 47, "Sleep");
+            ScheduleAlarm(context, 23, 48, "Sleep");
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -31,6 +33,8 @@ namespace TrackYourTasks
             var alarmManager = (AlarmManager)context.GetSystemService(Context.AlarmService);
             var intent = new Intent(context, typeof(NotificationAalarmReceiver));
             intent.PutExtra("NotificationLabel", label);
+
+            Console.WriteLine("NotificationLabel : " + label);
 
             var pendingIntent = PendingIntent.GetBroadcast(context, label.GetHashCode(), intent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
 

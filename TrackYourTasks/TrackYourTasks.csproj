@@ -44,13 +44,15 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 		<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+		<AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
 		<!-- universal APK -->
-		<DebugSymbols>False</DebugSymbols>
+		<DebugSymbols>True</DebugSymbols>
 		<AndroidKeyStore>True</AndroidKeyStore>
 		<AndroidSigningStorePass>123456</AndroidSigningStorePass>
 		<AndroidSigningKeyAlias>myalias</AndroidSigningKeyAlias>
 		<AndroidSigningKeyPass>123456</AndroidSigningKeyPass>
+		<RunAOTCompilation>True</RunAOTCompilation>
+		<PublishTrimmed>True</PublishTrimmed>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">

@@ -19,8 +19,19 @@ namespace TrackYourTasks
             var userClickedYes = GetUserClickedYes();
             var userNotificationLabel = GetUserNotificationLabel();
 
+            var userCount = GetUserCount();
+            var userLabel = GetUserNotificationLabel();
+
+            Models.UserData userData = new Models.UserData
+            {
+                UserClickedYes = userClickedYes,
+                userLabel = userLabel,
+                userCount = userCount
+            };
+
             // Use the retrieved boolean value as needed in your page
             Console.WriteLine($"User clicked YES?: {userClickedYes}");
+            Console.WriteLine($"userNotificationLabel: {userNotificationLabel}");
         }
 
         private bool GetUserClickedYes()

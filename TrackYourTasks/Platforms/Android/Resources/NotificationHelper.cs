@@ -37,6 +37,9 @@ namespace TrackYourTasks.Platforms.Android.Services
             yesIntent.SetAction("ACTION_YES");
             yesIntent.PutExtra("NotificationTime", timeLabel); // e.g. "9AM","1PM","9PM"
 
+
+            Console.WriteLine("NotificationLabel-ShowInteractiveNotification : " + timeLabel);
+
             var yesPendingIntent = PendingIntent.GetBroadcast(
                 _context,
                 new Random().Next(1000, 9999), // unique requestCode
