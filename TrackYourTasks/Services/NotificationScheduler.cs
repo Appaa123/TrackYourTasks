@@ -11,15 +11,10 @@ namespace TrackYourTasks.Services
     {
         public static void ScheduleDailyNotifications()
         {
-            ScheduleNotification("Night Sleep Reminder", "Review your tasks before sleep.", 00, 41);
-            ScheduleNotification("Night Sleep Reminder", "Review your tasks before sleep.", 00, 42);
             ScheduleNotification("Morning Excecise Reminder", "Good morning! Plan your day.", 9, 0);
             ScheduleNotification("Afternoon Food Reminder", "Take a short break!", 13, 0);
             ScheduleNotification("Night Sleep Reminder", "Review your tasks before sleep.", 21, 0);
-            ScheduleNotification("Night Sleep Reminder", "Review your tasks before sleep.", 00, 09);
-            ScheduleNotification("Night Sleep Reminder", "Review your tasks before sleep.", 00, 46);
-            ScheduleNotification("Night Sleep Reminder", "Review your tasks before sleep.", 00, 45);
-        }
+        } 
 
         private static void ScheduleNotification(string title, string message, int hour, int minute)
         {
