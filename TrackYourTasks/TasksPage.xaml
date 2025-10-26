@@ -10,17 +10,18 @@
             Spacing="25">
 
             <Label
-                Text="Select your tasks"
+                Text= "{Binding displayValue}"
                 Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+                SemanticProperties.HeadingLevel="Level1"
+                />
 
             <Label
-                Text="Excecise"
+                Text="{Binding userNotificationLabel}"
                 Style="{StaticResource SubHeadline}"
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="Welcome to Track Your Tasks App!!" />
 
-            <Button 
+            <!--<Button 
 			x:Name="YesBtn"
 			Text="Yes"
             Clicked="OnYesClicked"
@@ -30,7 +31,7 @@
 			x:Name="NoBtn"
 			Text="No"
             Clicked="OnNoClicked"
-            BackgroundColor="LightCoral"/>
+            BackgroundColor="LightCoral"/>-->
             
             
             

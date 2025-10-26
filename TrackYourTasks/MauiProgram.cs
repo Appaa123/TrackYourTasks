@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Plugin.LocalNotification;
 using TrackYourTasks.Data;
 using TrackYourTasks.Interfaces;
 using TrackYourTasks.Services;
+using INotificationService = TrackYourTasks.Interfaces.INotificationService;
 
 namespace TrackYourTasks
 {
@@ -13,6 +15,7 @@ namespace TrackYourTasks
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseLocalNotification()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

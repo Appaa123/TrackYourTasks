@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace TrackYourTasks.Interfaces
 {
-    public interface INotificationService
+    public interface INotificationManagerService
     {
-        Task ShowNotification(string title, string message);
-        Task ShowNotificationWithActions();
-
+        void SendNotification(string title, string message);
     }
 }

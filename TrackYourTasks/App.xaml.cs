@@ -12,6 +12,7 @@ namespace TrackYourTasks
 
             using var db = new AppDbContext();
             db.Database.EnsureCreated();
+            Services.NotificationScheduler.ScheduleDailyNotifications();
             _notificationService = notificationService;
             //MainPage = new AppShell();
         }
