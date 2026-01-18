@@ -10,6 +10,7 @@ namespace TrackYourTasks.Services
     public static class NotificationScheduler
     {
         public static void ScheduleDailyNotifications()
+        
         {
             ScheduleNotification("Morning Excecise Reminder", "Good morning! Plan your day.", 9, 0);
             ScheduleNotification("Afternoon Food Reminder", "Take a short break!", 13, 0);
@@ -19,6 +20,7 @@ namespace TrackYourTasks.Services
         private static void ScheduleNotification(string title, string message, int hour, int minute)
         {
             var notifyTime = DateTime.Today.AddHours(hour).AddMinutes(minute);
+            string userCompletedData = string.Empty;
             if (notifyTime < DateTime.Now)
                 notifyTime = notifyTime.AddDays(1);
 
@@ -33,6 +35,8 @@ namespace TrackYourTasks.Services
                     RepeatType = NotificationRepeat.Daily
                 }
             };
+
+            userCompletedData = request.ReturningData;
 
             LocalNotificationCenter.Current.Show(request);
         }

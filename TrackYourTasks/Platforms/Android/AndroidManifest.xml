@@ -22,7 +22,9 @@
 				<action android:name="ACTION_NO" />
 			</intent-filter>
 		</receiver>
-		
+		<receiver android:name=".YesReceiver" android:exported="true" />
+		<receiver android:name=".NoReceiver" android:exported="true" />
+
 	</application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />

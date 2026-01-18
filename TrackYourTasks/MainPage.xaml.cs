@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Plugin.LocalNotification;
 using System.Threading.Tasks;
 using TrackYourTasks.Data;
 using TrackYourTasks.Interfaces;
 using TrackYourTasks.Services;
+using Microsoft.Extensions.DependencyInjection; // used for IServiceProvider extensions
+using INotificationService = TrackYourTasks.Interfaces.INotificationService;
 #if ANDROID
 using TrackYourTasks.Platforms.Android;
 #endif
@@ -24,18 +26,7 @@ namespace TrackYourTasks
         {
             try
             {
-                //var now = DateTime.Now.TimeOfDay;
-
-                //if (now.Hours == 9)
-                //    SendPlatformNotification("9AM");
-                //else if (now.Hours == 13)
-                //    SendPlatformNotification("1PM");
-                //else if (now.Hours == 21)
-                //    SendPlatformNotification("9PM");
-
-                //await _notificationService.ShowNotification("Alert", "This is a MAUI notification!");
                 Console.WriteLine("Triggering the notifications");
-
             }
             catch (Exception ex)
             {
@@ -76,11 +67,46 @@ namespace TrackYourTasks
         }
         private async void OnCreateTaskButtonClicked(object? sender, EventArgs e)
         {
-            await Navigation.PushAsync(new CreateTasks(new AppDbContext(), new NotificationService()));
+            try
+            {
+                // Shell.Current will be null because the app uses a NavigationPage (see App.CreateWindow).
+                // Use Navigation.PushAsync and resolve the page from DI if available; otherwise fall back to constructing it.
+                var page = new CreateTasks(new AppDbContext(), new NotificationService());
+
+                if (Navigation != null)
+                    await Navigation.PushAsync(page);
+                else if (Application.Current?.MainPage?.Navigation != null)
+                    await Application.Current.MainPage.Navigation.PushAsync(page);
+                else
+                    await DisplayAlert("Error", "Navigation is not available", "OK");
+
+                Console.WriteLine("Create Task Button Clicked");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to navigate to CreateTasks: {ex.Message}", "OK");
+            }
         }
         private async void OnViewTaskButtonClicked(object? sender, EventArgs e)
         {
-            await Navigation.PushAsync(new ViewTasks(new AppDbContext(), new NotificationService()));
+            try
+            {
+                // Prefer Navigation.PushAsync when not using Shell.Current
+                var page = new ViewTasks(new AppDbContext(), new NotificationService());
+
+                if (Navigation != null)
+                    await Navigation.PushAsync(page);
+                else if (Application.Current?.MainPage?.Navigation != null)
+                    await Application.Current.MainPage.Navigation.PushAsync(page);
+                else
+                    await DisplayAlert("Error", "Navigation is not available", "OK");
+
+                Console.WriteLine("View Task Button Clicked");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to navigate to ViewTasks: {ex.Message}", "OK");
+            }
         }
     }
 }

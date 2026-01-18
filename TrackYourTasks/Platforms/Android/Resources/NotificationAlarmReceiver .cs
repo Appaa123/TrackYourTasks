@@ -12,8 +12,10 @@ namespace TrackYourTasks.Platforms.Android.Services
             var label = intent.GetStringExtra("NotificationLabel") ?? "Unknown";
             // Call your notification method for this label
             // SendPlatformNotification should be accessible here, for example:
-            NotificationHelper notificationHelper = new NotificationHelper(context);
-            notificationHelper.ShowInteractiveNotification("Reminder", "Do you want to proceed?", label);
+            //NotificationHelper notificationHelper = new NotificationHelper(context);
+            //notificationHelper.ShowInteractiveNotification("Reminder", "Do you want to proceed?", label);
+            NotificationService notificationService = new NotificationService();
+            notificationService.ShowNotificationWithActions(label, "Do you want to proceed?");
         }
     }
 }

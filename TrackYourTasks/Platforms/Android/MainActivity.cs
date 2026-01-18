@@ -12,11 +12,16 @@ namespace TrackYourTasks
         void ScheduleRepeatingNotifications(Context context)
         {
             Console.WriteLine("Listening......");
-            ScheduleAlarm(context, 9, 0, "Excercise");
-            ScheduleAlarm(context, 13, 0, "Food");
-            ScheduleAlarm(context, 21, 0, "Sleep");
-            ScheduleAlarm(context, 23, 47, "Sleep");
-            ScheduleAlarm(context, 23, 48, "Sleep");
+            ScheduleAlarm(context, 20, 49, "Excercise");
+            ScheduleAlarm(context, 20, 49, "Food");
+            ScheduleAlarm(context, 20, 49, "Sleep");
+            ScheduleAlarm(context, 20, 49, "Sleep");
+            ScheduleAlarm(context, 20, 48, "Sleep");
+            ScheduleAlarm(context, 20, 50, "Sleep");
+            ScheduleAlarm(context, 20, 50, "Sleep");
+            ScheduleAlarm(context, 20, 50, "Sleep");
+            ScheduleAlarm(context, 20, 55, "Sleep");
+            ScheduleAlarm(context, 20, 56, "Sleep");
         }
 
         protected override void OnCreate(Bundle savedInstanceState)

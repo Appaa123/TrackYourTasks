@@ -8,8 +8,9 @@ namespace TrackYourTasks.Interfaces
 {
     public interface INotificationService
     {
-        Task ShowNotification(string title, string message);
-        Task ShowNotificationWithActions();
+        //Task ShowNotification(string title, string message);
+        //Task ShowNotificationWithActions();
+        public void ShowNotificationWithActions(string title, string message);
 
     }
 }
