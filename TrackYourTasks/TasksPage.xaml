@@ -4,52 +4,26 @@
              x:Class="TrackYourTasks.TasksPage"
              BackgroundImageSource="background_theme.jpg">
 
+    <Label Text="User Data">
+        
+    </Label>
+    
     <ScrollView>
         <CollectionView x:Name="UserData"
-                    ItemsSource="{Binding Tasks}">
+                ItemsSource="{Binding Tasks}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Stroke="Gray" StrokeThickness="1" Margin="5" Padding="10">
+                    <Border Stroke="Black" StrokeThickness="1" Margin="5" Padding="10">
                         <VerticalStackLayout>
-                            <Label Text="{Binding userCount}" FontAttributes="Bold"/>
-                            <Label Text="{StaticResource Headline}" FontSize="Small"/>
+                            <Label Text="{Binding UserCount}" FontAttributes="Bold"/>
+                            <Label Text="{Binding UserLabel}" FontSize="Small"/>
                             <Label Text="{Binding UserClickedYes}"/>
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-        <!--<VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
 
-            <Label
-                Text= "{Binding userCount}"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1"
-                />
-
-            <Label
-                Text="{Binding userLabel}"
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to Track Your Tasks App!!" />-->
-
-            <!--<Button 
-			x:Name="YesBtn"
-			Text="Yes"
-            Clicked="OnYesClicked"
-            BackgroundColor="LightGreen"/>
-            
-            <Button
-			x:Name="NoBtn"
-			Text="No"
-            Clicked="OnNoClicked"
-            BackgroundColor="LightCoral"/>-->
-            
-            
-            
-        <!--</VerticalStackLayout>-->
     </ScrollView>
 
 </ContentPage>

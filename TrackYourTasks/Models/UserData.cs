@@ -8,8 +8,11 @@ namespace TrackYourTasks.Models
 {
     public class UserData
     {
-        public string userLabel { get; set; } = string.Empty;
-        public int userCount { get; set; }
+        public int Id { get; set; } // Primary Key
+        public string TaskName { get; set; } = string.Empty;
+        public int Priority { get; set; }
+        public string UserLabel { get; set; } = string.Empty;
+        public int UserCount { get; set; }
         public bool UserClickedYes { get; set; }
     }
 }

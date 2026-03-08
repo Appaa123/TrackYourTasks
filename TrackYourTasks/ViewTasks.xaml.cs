@@ -69,7 +69,7 @@ namespace TrackYourTasks
 
         private async Task<bool> OnDeleteButtonClickedConfirmation(object sender, EventArgs e)
         {
-            var popup = new ConfirmPopup();
+            var popup = new ConfirmPopup("Are you sure?");
             bool result = await popup.ShowAsync(this); // ✅ Custom ShowAsync to get result
 
             if (result)

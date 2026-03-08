@@ -13,10 +13,12 @@ namespace TrackYourTasks.Popups
     {
         private TaskCompletionSource<bool> _taskCompletionSource;
 
-        public ConfirmPopup()
+        public string Message { get; set; }
+        public ConfirmPopup(string message)
         {
             InitializeComponent();
             _taskCompletionSource = new TaskCompletionSource<bool>();
+            BindingContext = this;
         }
 
         // This will be called to show popup and wait for result

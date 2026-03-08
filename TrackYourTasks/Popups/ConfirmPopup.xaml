@@ -16,7 +16,7 @@
 
         <VerticalStackLayout Spacing="15">
             <Label 
-                Text="Are you sure?"
+                Text="{Binding Message}"
                 FontSize="18"
                 HorizontalOptions="Center"
                 TextColor="{AppThemeBinding Light=Black, Dark=White}" />

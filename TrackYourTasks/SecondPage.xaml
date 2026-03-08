@@ -9,6 +9,22 @@
             Padding="30,0"
             Spacing="25">
 
+            <CollectionView x:Name="TasksList"
+    ItemsSource="{Binding Tasks}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="Gray" StrokeThickness="1" Margin="5" Padding="10">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" FontAttributes="Bold"/>
+                                <Label Text="{Binding Description}" FontSize="Small"/>
+                                <Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy}'}"/>
+                                <Label Text="{Binding Title}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
             <Label
                 Text="Select your tasks"
                 Style="{StaticResource Headline}"
@@ -22,11 +38,13 @@
 
             <Button Text="Yes"
             Clicked="OnYesClicked"
-            BackgroundColor="LightGreen"/>
+            BackgroundColor="LightGreen"
+            CommandParameter="{Binding Source={x:Reference TaskName}, Path=Text}"/>
 
             <Button Text="No"
             Clicked="OnNoClicked"
-            BackgroundColor="LightCoral"/>
+            BackgroundColor="LightCoral"
+            CommandParameter="{Binding Source={x:Reference TaskName}, Path=Text}"/>
 
 
 

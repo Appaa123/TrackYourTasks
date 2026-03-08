@@ -34,11 +34,21 @@ namespace TrackYourTasks
             }
             try
             {
-                await Navigation.PushAsync(new TasksPage());
+                // Prefer Navigation.PushAsync when not using Shell.Current
+                var page = new SecondPage(new AppDbContext(), new NotificationService());
+
+                if (Navigation != null)
+                    await Navigation.PushAsync(page);
+                else if (Application.Current?.MainPage?.Navigation != null)
+                    await Application.Current.MainPage.Navigation.PushAsync(page);
+                else
+                    await DisplayAlert("Error", "Navigation is not available", "OK");
+
+                Console.WriteLine("View Task Button Clicked");
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Failed to navigate to TasksPage: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"Failed to navigate to SecondPage: {ex.Message}", "OK");
             }
         }
         private async void RequestNotificationPermission()
