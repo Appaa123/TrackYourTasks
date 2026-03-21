@@ -94,6 +94,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Update="PendingTasksPage.xaml.cs">
+		  <DependentUpon>PendingTasksPage.xaml</DependentUpon>
+		</Compile>
 		<Compile Update="SecondPage.xaml.cs">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Compile>
@@ -103,6 +106,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<MauiXaml Update="PendingTasksPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="CreateTasks.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

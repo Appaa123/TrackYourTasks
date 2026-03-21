@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrackYourTasks.PendingTasksPage"
+             Title="Pending Tasks">
+
+    <CollectionView x:Name="TasksCollection">
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <Frame Margin="10" Padding="15">
+                    <VerticalStackLayout Spacing="10">
+
+                        <!-- Question -->
+                        <Label Text="{Binding TaskName}"
+                               FontSize="18"
+                               FontAttributes="Bold" />
+
+                        <!-- Buttons -->
+                        <HorizontalStackLayout Spacing="10">
+                            <Button Text="Yes"
+                                    Clicked="OnYesClicked"
+                                    CommandParameter="{Binding Id}"
+                                    BackgroundColor="Green"
+                                    TextColor="White"/>
+
+                            <Button Text="No"
+                                    Clicked="OnNoClicked"
+                                    CommandParameter="{Binding Id}"
+                                    BackgroundColor="Red"
+                                    TextColor="White"/>
+                        </HorizontalStackLayout>
+
+                    </VerticalStackLayout>
+                </Frame>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+
+</ContentPage>
