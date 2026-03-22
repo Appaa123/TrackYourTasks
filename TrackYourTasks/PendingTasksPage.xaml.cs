@@ -43,6 +43,8 @@ public partial class PendingTasksPage : ContentPage
             _tasksBeingEdited.Remove(skippedTask);
         }
 
+        skippedTasks.Clear();
+
         TasksCollection.ItemsSource = _tasksBeingEdited;
     }
 
