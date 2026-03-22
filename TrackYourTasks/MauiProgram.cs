@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Microcharts.Maui;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Plugin.LocalNotification;
@@ -28,6 +29,7 @@ namespace TrackYourTasks
             builder.Services.AddDbContext<AppDbContext>();
             builder.Services.AddTransient<CreateTasks>();
             builder.Services.AddSingleton<MainPage>();
+            builder.UseMicrocharts();
 
             using (var scope = builder.Services.BuildServiceProvider().CreateScope())
             {

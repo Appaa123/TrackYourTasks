@@ -35,16 +35,19 @@ namespace TrackYourTasks
             try
             {
                 // Prefer Navigation.PushAsync when not using Shell.Current
-                var page = new SecondPage(new AppDbContext(), new NotificationService());
+                //var page = new SecondPage(new AppDbContext(), new NotificationService());
 
-                if (Navigation != null)
-                    await Navigation.PushAsync(page);
-                else if (Application.Current?.MainPage?.Navigation != null)
-                    await Application.Current.MainPage.Navigation.PushAsync(page);
-                else
-                    await DisplayAlert("Error", "Navigation is not available", "OK");
+                //if (Navigation != null)
+                //    await Navigation.PushAsync(page);
+                //else if (Application.Current?.MainPage?.Navigation != null)
+                //    await Application.Current.MainPage.Navigation.PushAsync(page);
+                //else
+                //    await DisplayAlert("Error", "Navigation is not available", "OK");
 
-                Console.WriteLine("View Task Button Clicked");
+                //Console.WriteLine("View Task Button Clicked");
+
+                await Navigation.PushAsync(new AnalyticsPage());
+
             }
             catch (Exception ex)
             {

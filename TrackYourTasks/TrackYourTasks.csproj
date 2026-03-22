@@ -86,11 +86,13 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="12.2.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="Microcharts.Maui" Version="1.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.9" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.90" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
 		<PackageReference Include="Plugin.LocalNotification" Version="12.0.2" />
+		<PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.2" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -102,6 +104,9 @@
 		</Compile>
 		<Compile Update="Services\NotificationScheduler.cs">
 		  <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+		</Compile>
+		<Compile Update="ViewAnalytics.xaml.cs">
+		  <DependentUpon>ViewAnalytics.xaml</DependentUpon>
 		</Compile>
 	</ItemGroup>
 
@@ -123,6 +128,9 @@
 		</MauiXaml>
 		<MauiXaml Update="TasksPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="ViewAnalytics.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="ViewTasks.xaml">
 		  <Generator>MSBuild:Compile</Generator>

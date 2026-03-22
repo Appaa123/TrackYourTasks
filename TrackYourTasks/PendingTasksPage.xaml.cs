@@ -28,7 +28,7 @@ public partial class PendingTasksPage : ContentPage
 
         using var db = new AppDbContext();
         _tasksBeingEdited = await db.Tasks
-                              .Where(t => !t.IsCompleted)
+                              .Where(t => !t.IsCompleted && !t.IsSkipped)
                               .ToListAsync();
 
         TrackTask skippedTask = _tasksBeingEdited.Find(task => skippedTasks.Contains(task.Id));
@@ -40,10 +40,15 @@ public partial class PendingTasksPage : ContentPage
         }
         if (skippedTask != null)
         {
+            skippedTask.IsSkipped = true;
             _tasksBeingEdited.Remove(skippedTask);
+            skippedTasks.Remove(skippedTask.Id);
         }
-
-        skippedTasks.Clear();
+        else if(_tasksBeingEdited.All(t => t.IsCompleted))
+        {
+            skippedTasks.Clear();
+            await Navigation.PushAsync(new MainPage(_notificationService));
+        }        
 
         TasksCollection.ItemsSource = _tasksBeingEdited;
     }
