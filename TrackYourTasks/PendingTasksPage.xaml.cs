@@ -29,6 +29,12 @@ public partial class PendingTasksPage : ContentPage
                               .Where(t => !t.IsCompleted)
                               .ToListAsync();
 
+        if(_tasksBeingEdited.Count == 0)
+        {
+            await Toast.Make("No pending tasks found. Enjoy your day!", ToastDuration.Short).Show();
+            await Navigation.PushAsync(new MainPage(_notificationService));
+        }
+
         TasksCollection.ItemsSource = _tasksBeingEdited;
     }
 
@@ -50,5 +56,6 @@ public partial class PendingTasksPage : ContentPage
     private async void OnNoClicked(object sender, EventArgs e)
     {
         await DisplayAlert("Reminder", "Try to complete later", "OK");
+        await Navigation.PushAsync(new MainPage(_notificationService));
     }
 }
