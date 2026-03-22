@@ -4,36 +4,59 @@
              x:Class="TrackYourTasks.PendingTasksPage"
              Title="Pending Tasks">
 
-    <CollectionView x:Name="TasksCollection">
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <Frame Margin="10" Padding="15">
-                    <VerticalStackLayout Spacing="10">
+    <Grid RowDefinitions="*,Auto">
 
-                        <!-- Question -->
-                        <Label Text="{Binding TaskName}"
-                               FontSize="18"
-                               FontAttributes="Bold" />
+        <!-- Tasks List -->
+        <CollectionView x:Name="TasksCollection" Grid.Row="0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="10" Padding="15">
+                        <VerticalStackLayout Spacing="10">
 
-                        <!-- Buttons -->
-                        <HorizontalStackLayout Spacing="10">
-                            <Button Text="Yes"
-                                    Clicked="OnYesClicked"
-                                    CommandParameter="{Binding Id}"
-                                    BackgroundColor="Green"
-                                    TextColor="White"/>
+                            <Label Text="Did you complete the task below?"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="White"/>
 
-                            <Button Text="No"
-                                    Clicked="OnNoClicked"
-                                    CommandParameter="{Binding Id}"
-                                    BackgroundColor="Red"
-                                    TextColor="White"/>
-                        </HorizontalStackLayout>
+                            <Label Text="{Binding Title}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="White"/>
 
-                    </VerticalStackLayout>
-                </Frame>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
+                            <HorizontalStackLayout Spacing="10">
+                                <Button Text="Yes"
+                                        Clicked="OnYesClicked"
+                                        CommandParameter="{Binding Id}"
+                                        BackgroundColor="Green"
+                                        TextColor="White"/>
+
+                                <Button Text="No"
+                                        Clicked="OnNoClicked"
+                                        CommandParameter="{Binding Id}"
+                                        BackgroundColor="Red"
+                                        TextColor="White"/>
+
+                                <Button Text="Skip"
+                                        Clicked="OnSkipClicked"
+                                        CommandParameter="{Binding Id}"
+                                        BackgroundColor="Blue"
+                                        TextColor="White"/>
+                            </HorizontalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Skip All Button -->
+        <Button Grid.Row="1"
+                Text="Skip All"
+                Clicked="OnSkipAllClicked"
+                BackgroundColor="Blue"
+                TextColor="White"
+                Margin="10"/>
+
+    </Grid>
 
 </ContentPage>
