@@ -40,9 +40,10 @@ public partial class PendingTasksPage : ContentPage
         }
         if (skippedTask != null)
         {
+            
+            _tasksBeingEdited.Remove(skippedTask); // for viewing
             skippedTask.IsSkipped = true;
-            _tasksBeingEdited.Remove(skippedTask);
-            skippedTasks.Remove(skippedTask.Id);
+            skippedTasks.Remove(skippedTask.Id); // for tracking skipped tasks
         }
         else if(_tasksBeingEdited.All(t => t.IsCompleted))
         {
