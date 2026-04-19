@@ -40,6 +40,14 @@ namespace TrackYourTasks
             builder.Logging.AddDebug();
 #endif
 
+            // 🔔 Request notification permission on iOS
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                if (DeviceInfo.Platform == DevicePlatform.iOS)
+                {
+                    await LocalNotificationCenter.Current.RequestNotificationPermission();
+                }
+            });
 
             LocalNotificationCenter.Current.NotificationActionTapped += async (e) =>
             {
