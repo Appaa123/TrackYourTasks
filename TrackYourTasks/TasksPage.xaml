@@ -4,26 +4,27 @@
              x:Class="TrackYourTasks.TasksPage"
              BackgroundImageSource="background_theme.jpg">
 
-    <Label Text="User Data">
-        
-    </Label>
-    
-    <ScrollView>
-        <CollectionView x:Name="UserData"
-                ItemsSource="{Binding Tasks}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Border Stroke="Black" StrokeThickness="1" Margin="5" Padding="10">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding UserCount}" FontAttributes="Bold"/>
-                            <Label Text="{Binding UserLabel}" FontSize="Small"/>
-                            <Label Text="{Binding UserClickedYes}"/>
-                        </VerticalStackLayout>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+    <VerticalStackLayout>
+        <Label Text="User Data"
+               FontSize="20"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"/>
 
-    </ScrollView>
-
+        <ScrollView>
+            <CollectionView x:Name="UserData"
+                            ItemsSource="{Binding Tasks}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="Black" StrokeThickness="1" Margin="5" Padding="10">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding UserCount}" FontAttributes="Bold"/>
+                                <Label Text="{Binding UserLabel}" FontSize="Small"/>
+                                <Label Text="{Binding UserClickedYes}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+    </VerticalStackLayout>
 </ContentPage>

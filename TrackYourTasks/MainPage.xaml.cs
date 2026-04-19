@@ -4,7 +4,6 @@ using TrackYourTasks.Data;
 using TrackYourTasks.Interfaces;
 using TrackYourTasks.Services;
 using Microsoft.Extensions.DependencyInjection; // used for IServiceProvider extensions
-using INotificationService = TrackYourTasks.Interfaces.INotificationService;
 #if ANDROID
 using TrackYourTasks.Platforms.Android;
 #endif
@@ -13,14 +12,10 @@ namespace TrackYourTasks
 {
     public partial class MainPage : ContentPage
     {
-        private INotificationService _notificationService;
-        int count = 0;
-
-        public MainPage(INotificationService notificationService)
+        public MainPage()
         {
             InitializeComponent();
             RequestNotificationPermission();
-            _notificationService = notificationService;
         }
         private async void OnTaskButtonClicked(object? sender, EventArgs e)
         {
@@ -84,7 +79,7 @@ namespace TrackYourTasks
             {
                 // Shell.Current will be null because the app uses a NavigationPage (see App.CreateWindow).
                 // Use Navigation.PushAsync and resolve the page from DI if available; otherwise fall back to constructing it.
-                var page = new CreateTasks(new AppDbContext(), new NotificationService());
+                var page = new CreateTasks(new AppDbContext());
 
                 if (Navigation != null)
                     await Navigation.PushAsync(page);
@@ -105,7 +100,7 @@ namespace TrackYourTasks
             try
             {
                 // Prefer Navigation.PushAsync when not using Shell.Current
-                var page = new ViewTasks(new AppDbContext(), new NotificationService());
+                var page = new ViewTasks(new AppDbContext());
 
                 if (Navigation != null)
                     await Navigation.PushAsync(page);

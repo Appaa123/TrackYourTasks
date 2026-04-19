@@ -23,6 +23,10 @@
                 Margin="30"
                 AutoSize="TextChanges"
                 PlaceholderColor="Black"/>
+                <DatePicker x:Name="TaskDatePicker" Margin="30" Format="dd MMM yyyy"/>
+
+                <TimePicker x:Name="TaskTimePicker" Margin="30" Format="HH:mm" TextColor="Black"/>
+
                 <Button x:Name="AddTaskButton" Text="Add Task" Clicked="OnAddTaskClicked" Margin="30" BackgroundColor="#FFB038"/>
                 <Button x:Name="CancelTaskButton" Text="Cancel" Clicked="OnCancelTaskClicked" Margin="30" BackgroundColor="#FFB038"/>
 
@@ -34,7 +38,7 @@
                                 <VerticalStackLayout>
                                     <Label Text="{Binding Title}" FontAttributes="Bold"/>
                                     <Label Text="{Binding Description}" FontSize="Small"/>
-                                    <Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy}'}"/>
+                                    <Label Text="{Binding CreatedAt, StringFormat='{0:dd MMM yyyy HH:mm}'}"/>
                                 </VerticalStackLayout>
                             </Border>
                         </DataTemplate>

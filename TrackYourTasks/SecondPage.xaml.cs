@@ -13,12 +13,10 @@ namespace TrackYourTasks
     public partial class SecondPage : ContentPage
     {
         private readonly AppDbContext _db;
-        private readonly INotificationService _notificationService;
-        public SecondPage(AppDbContext db, INotificationService notificationService)
+        public SecondPage(AppDbContext db)
         {
             InitializeComponent();
             _db = db;
-            _notificationService = notificationService;
             LoadTasks();
         }
 

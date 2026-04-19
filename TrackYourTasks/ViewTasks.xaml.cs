@@ -16,12 +16,10 @@ namespace TrackYourTasks
     public partial class ViewTasks : ContentPage
     {
         private readonly AppDbContext _db;
-        private readonly INotificationService _notificationService;
-        public ViewTasks(AppDbContext db, INotificationService notificationService)
+        public ViewTasks(AppDbContext db)
         {
             InitializeComponent();
             _db = db;
-            _notificationService = notificationService;
             LoadTasks();
         }
 
@@ -57,13 +55,13 @@ namespace TrackYourTasks
         {
             if (sender is Button button && button.BindingContext is TrackTask task)
             {
-                await Navigation.PushAsync(new CreateTasks(_db, _notificationService, task));
+                await Navigation.PushAsync(new CreateTasks(_db, task));
             }
         }
         private async void OnBackTaskClicked(object sender, EventArgs e)
         {
 
-            await Navigation.PushAsync(new MainPage(_notificationService));
+            await Navigation.PushAsync(new MainPage());
 
         }
 

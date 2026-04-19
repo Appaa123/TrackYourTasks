@@ -49,13 +49,25 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <!-- Skip All Button -->
-        <Button Grid.Row="1"
-                Text="Skip All"
-                Clicked="OnSkipAllClicked"
-                BackgroundColor="Blue"
-                TextColor="White"
-                Margin="10"/>
+        <!-- Empty State Message -->
+        <Label x:Name="EmptyMessage"
+           Grid.Row="0"
+           Text="No pending tasks, enjoy your day!"
+           FontSize="18"
+           FontAttributes="Bold"
+           TextColor="White"
+           HorizontalOptions="Center"
+           VerticalOptions="Center"
+           IsVisible="False"/>
+
+        <!-- Skip All / Continue Button -->
+        <Button x:Name="SkipAllButton"
+            Grid.Row="1"
+            Text="Skip All"
+            Clicked="OnSkipAllClicked"
+            BackgroundColor="Blue"
+            TextColor="White"
+            Margin="10"/>
 
     </Grid>
 

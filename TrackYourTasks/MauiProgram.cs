@@ -6,7 +6,6 @@ using Plugin.LocalNotification;
 using TrackYourTasks.Data;
 using TrackYourTasks.Interfaces;
 using TrackYourTasks.Services;
-using INotificationService = TrackYourTasks.Interfaces.INotificationService;
 
 namespace TrackYourTasks
 {
@@ -25,7 +24,7 @@ namespace TrackYourTasks
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            builder.Services.AddSingleton<INotificationService, NotificationService>();
+            //builder.Services.AddSingleton<INotificationService, NotificationService>();
             builder.Services.AddDbContext<AppDbContext>();
             builder.Services.AddTransient<CreateTasks>();
             builder.Services.AddSingleton<MainPage>();
@@ -40,6 +39,22 @@ namespace TrackYourTasks
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+
+
+            LocalNotificationCenter.Current.NotificationActionTapped += async (e) =>
+            {
+                if (e.Request.ReturningData == "PendingTasksPage")
+                {
+                    await MainThread.InvokeOnMainThreadAsync(async () =>
+                    {
+                        var navigation = Application.Current?.MainPage?.Navigation;
+                        if (navigation != null)
+                        {
+                            await navigation.PushAsync(new PendingTasksPage(new AppDbContext()));
+                        }
+                    });
+                }
+            };
 
             return builder.Build();
         }

@@ -9,13 +9,13 @@ namespace TrackYourTasks.Platforms.Android.Services
     {
         public override void OnReceive(Context context, Intent intent)
         {
-            var label = intent.GetStringExtra("NotificationLabel") ?? "Unknown";
+            //var label = intent.GetStringExtra("NotificationLabel") ?? "Unknown";
             // Call your notification method for this label
             // SendPlatformNotification should be accessible here, for example:
             //NotificationHelper notificationHelper = new NotificationHelper(context);
             //notificationHelper.ShowInteractiveNotification("Reminder", "Do you want to proceed?", label);
-            NotificationService notificationService = new NotificationService();
-            notificationService.ShowNotificationWithActions(label, "Do you want to proceed?");
+            //NotificationService notificationService = new NotificationService();
+            //notificationService.ShowNotificationWithActions(label, "Do you want to proceed?");
         }
     }
 }
