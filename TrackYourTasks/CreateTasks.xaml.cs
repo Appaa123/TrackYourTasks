@@ -59,8 +59,8 @@ namespace TrackYourTasks
             {
                 var task = new TrackTask
                 {
-                    Title = TitleEntry.Text,
-                    Description = DescEntry.Text,
+                    Title = TitleEntry.Text ?? string.Empty,
+                    Description = DescEntry.Text ?? string.Empty,
                     IsCompleted = false
                 };
 
@@ -83,8 +83,8 @@ namespace TrackYourTasks
             }
             else
             {
-                _taskBeingEdited.Title = TitleEntry.Text;
-                _taskBeingEdited.Description = DescEntry.Text;
+                _taskBeingEdited.Title = TitleEntry.Text ?? string.Empty;
+                _taskBeingEdited.Description = DescEntry.Text ?? string.Empty;
 
                 _db.Tasks.Update(_taskBeingEdited);
                 await _db.SaveChangesAsync();
