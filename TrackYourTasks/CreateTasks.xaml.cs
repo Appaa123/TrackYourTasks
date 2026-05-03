@@ -60,6 +60,8 @@ namespace TrackYourTasks
                     Title = TitleEntry.Text ?? string.Empty,
                     Description = DescEntry.Text ?? string.Empty,
                     IsCompleted = false,
+                    IsSkipped = false,
+                    IsPartiallyCompleted = false,
                     CreatedAt = DateTime.UtcNow
                 };
 

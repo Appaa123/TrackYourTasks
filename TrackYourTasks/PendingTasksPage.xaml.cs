@@ -37,7 +37,7 @@ public partial class PendingTasksPage : ContentPage
         {
             await Toast.Make("No pending tasks found. Enjoy your day!", ToastDuration.Short).Show();
 
-            await Navigation.PopAsync(); // 🔥 FIX
+            await Navigation.PushAsync(new MainPage(_api)); // 🔥 FIX
             return;
         }
 
@@ -99,12 +99,12 @@ public partial class PendingTasksPage : ContentPage
     {
         if (SkipAllButton.Text == "Continue")
         {
-            await Navigation.PopAsync(); // 🔥 FIX
+            await Navigation.PushAsync(new MainPage(_api)); // 🔥 FIX
         }
         else
         {
             await Toast.Make("Skipping all pending tasks", ToastDuration.Short).Show();
-            await Navigation.PopAsync(); // 🔥 FIX
+            await Navigation.PushAsync(new MainPage(_api)); // 🔥 FIX
         }
     }
 }

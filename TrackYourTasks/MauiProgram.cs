@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui;
+﻿using System.Reflection;
+using CommunityToolkit.Maui;
 using Microcharts.Maui;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -24,24 +25,38 @@ namespace TrackYourTasks
 					fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 				});
 
-			// ✅ Load config file
-			builder.Configuration.AddJsonFile("appsettings.json", optional: false);
+			// ✅ Load appsettings.json from EmbeddedResource
+			var assembly = Assembly.GetExecutingAssembly();
 
-			// ✅ Register ApiService with BaseUrl
+			using var stream = assembly.GetManifestResourceStream("TrackYourTasks.appsettings.json");
+
+			if (stream == null)
+				throw new Exception("appsettings.json not found. Check namespace and file name!");
+
+			var config = new ConfigurationBuilder()
+				.AddJsonStream(stream)
+				.Build();
+
+			builder.Configuration.AddConfiguration(config);
+
+			// ✅ Register ApiService with BaseUrl from config
 			builder.Services.AddSingleton<ApiService>(sp =>
 			{
-				var config = sp.GetRequiredService<IConfiguration>();
-				var baseUrl = config["ApiSettings:BaseUrl"];
+				var configuration = sp.GetRequiredService<IConfiguration>();
+				var baseUrl = configuration["ApiSettings:BaseUrl"];
+
+				if (string.IsNullOrEmpty(baseUrl))
+					throw new Exception("BaseUrl missing in appsettings.json");
 
 				return new ApiService(baseUrl);
 			});
 
 			// ✅ Register Pages
-			builder.Services.AddTransient<CreateTasks>();
-			builder.Services.AddTransient<PendingTasksPage>();
-			builder.Services.AddTransient<ViewTasks>();
-			builder.Services.AddTransient<AnalyticsPage>(); // 🔥 you missed this earlier
 			builder.Services.AddSingleton<MainPage>();
+			builder.Services.AddTransient<CreateTasks>();
+			builder.Services.AddTransient<ViewTasks>();
+			builder.Services.AddTransient<PendingTasksPage>();
+			builder.Services.AddTransient<AnalyticsPage>();
 
 #if DEBUG
 			builder.Logging.AddDebug();
@@ -70,7 +85,6 @@ namespace TrackYourTasks
 						if (navigation != null)
 						{
 							var api = app.Services.GetRequiredService<ApiService>();
-
 							await navigation.PushAsync(new PendingTasksPage(api));
 						}
 					});
