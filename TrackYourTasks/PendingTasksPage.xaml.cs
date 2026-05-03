@@ -1,134 +1,110 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using TrackYourTasks.Data;
-using TrackYourTasks.Interfaces;
 using TrackYourTasks.Models;
+using TrackYourTasks.Services;
 
 namespace TrackYourTasks;
 
 public partial class PendingTasksPage : ContentPage
 {
-    private readonly AppDbContext _db;
-    private List<TrackTask> _tasksBeingEdited;
-    private TrackTask _taskBeingEdited;
-    private List<int> skippedTasks = new List<int>();
+    private readonly ApiService _api;
+    private List<TrackTask> _tasksBeingEdited = new();
+    private List<string> skippedTasks = new();
 
-    public PendingTasksPage(AppDbContext db)
+    public PendingTasksPage(ApiService api)
     {
         InitializeComponent();
-        _db = db;
+        _api = api;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        await LoadTasks();
+    }
 
-        using var db = new AppDbContext();
-        _tasksBeingEdited = await db.Tasks
-                              .Where(t => !t.IsCompleted && !t.IsSkipped)
-                              .ToListAsync();
+    // 🔄 Load tasks cleanly
+    private async Task LoadTasks()
+    {
+        var allTasks = await _api.GetTasksAsync();
 
-        TrackTask skippedTask = _tasksBeingEdited.Find(task => skippedTasks.Contains(task.Id));
+        _tasksBeingEdited = allTasks
+            .Where(t => !t.IsCompleted && !t.IsSkipped)
+            .Where(t => !skippedTasks.Contains(t.Id))
+            .ToList();
 
-        if(_tasksBeingEdited.Count == 0)
+        if (!_tasksBeingEdited.Any())
         {
             await Toast.Make("No pending tasks found. Enjoy your day!", ToastDuration.Short).Show();
-            await Navigation.PushAsync(new MainPage());
-        }
-        if (skippedTask != null)
-        {
-            
-            skippedTask.IsSkipped = true;
-            _taskBeingEdited = await db.Tasks.FirstOrDefaultAsync(t => t.Id == skippedTask.Id);
 
-            if (_taskBeingEdited != null)
-            {
-                _taskBeingEdited.IsSkipped = true;
-                await db.SaveChangesAsync();
-            }
-
-            skippedTasks.Remove(skippedTask.Id); // for tracking skipped tasks
-            _tasksBeingEdited.Remove(skippedTask); // for viewing
-        }
-        else if(_tasksBeingEdited.All(t => t.IsCompleted))
-        {
-            skippedTasks.Clear();
-            await Navigation.PushAsync(new MainPage());
+            await Navigation.PopAsync(); // 🔥 FIX
+            return;
         }
 
         TasksCollection.ItemsSource = _tasksBeingEdited;
 
-        if (_tasksBeingEdited == null || _tasksBeingEdited.Count == 0)
-        {
-            // Show empty message
-            EmptyMessage.IsVisible = true;
-
-            // Hide the list
-            TasksCollection.IsVisible = false;
-
-            // Change button text
-            SkipAllButton.Text = "Continue";
-        }
-        else
-        {
-            EmptyMessage.IsVisible = false;
-            TasksCollection.IsVisible = true;
-            SkipAllButton.Text = "Skip All";
-        }
-
+        EmptyMessage.IsVisible = !_tasksBeingEdited.Any();
+        TasksCollection.IsVisible = _tasksBeingEdited.Any();
+        SkipAllButton.Text = _tasksBeingEdited.Any() ? "Skip All" : "Continue";
     }
 
+    // ✅ YES → complete
     private async void OnYesClicked(object sender, EventArgs e)
     {
-        var button = sender as Button;
-        int taskId = (int)button.CommandParameter;
+        var taskId = (sender as Button)?.CommandParameter?.ToString();
+        if (taskId == null) return;
 
-        using var db = new AppDbContext();
-        var task = await db.Tasks.FindAsync(taskId);
+        var task = _tasksBeingEdited.FirstOrDefault(t => t.Id == taskId);
+        if (task == null) return;
+
         task.IsCompleted = true;
-        await db.SaveChangesAsync();
+
+        await _api.UpdateTaskAsync(task);
 
         await Toast.Make("Task marked completed!", ToastDuration.Short).Show();
-        //await DisplayAlert("Done", "Task marked completed", "OK");
 
-        OnAppearing(); // Refresh list
+        await LoadTasks(); // 🔥 FIX
     }
 
+    // ❌ NO → skip temporarily
     private async void OnNoClicked(object sender, EventArgs e)
     {
-        var button = sender as Button;
-        int taskId = (int)button.CommandParameter;
+        var taskId = (sender as Button)?.CommandParameter?.ToString();
+        if (taskId == null) return;
 
-        using var db = new AppDbContext();
-        var task = await db.Tasks.FindAsync(taskId);
         skippedTasks.Add(taskId);
+
         await Toast.Make("Try to complete later!", ToastDuration.Short).Show();
-        OnAppearing(); // Refresh list
+
+        await LoadTasks();
     }
+
+    // ⏭ Skip one
     private async void OnSkipClicked(object sender, EventArgs e)
     {
-        var button = sender as Button;
-        int taskId = (int)button.CommandParameter;
+        var taskId = (sender as Button)?.CommandParameter?.ToString();
+        if (taskId == null) return;
 
-        using var db = new AppDbContext();
-        var task = await db.Tasks.FindAsync(taskId);
         skippedTasks.Add(taskId);
-        await Toast.Make("Skipping the status check of pending task - " + task?.Title, ToastDuration.Short).Show();
-        OnAppearing(); // Refresh list
+
+        var task = _tasksBeingEdited.FirstOrDefault(t => t.Id == taskId);
+
+        await Toast.Make($"Skipping: {task?.Title}", ToastDuration.Short).Show();
+
+        await LoadTasks();
     }
+
+    // ⏭ Skip all
     private async void OnSkipAllClicked(object sender, EventArgs e)
     {
         if (SkipAllButton.Text == "Continue")
         {
-            await Navigation.PushAsync(new MainPage());
+            await Navigation.PopAsync(); // 🔥 FIX
         }
         else
         {
-            await Toast.Make("Skipping the status check of all the pending tasks", ToastDuration.Short).Show();
-            await Navigation.PushAsync(new MainPage());
+            await Toast.Make("Skipping all pending tasks", ToastDuration.Short).Show();
+            await Navigation.PopAsync(); // 🔥 FIX
         }
     }
 }

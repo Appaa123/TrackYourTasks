@@ -1,80 +1,76 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using TrackYourTasks.Data;
 using TrackYourTasks.Models;
 using TrackYourTasks.Popups;
+using TrackYourTasks.Services;
 
 namespace TrackYourTasks
 {
     public partial class ViewTasks : ContentPage
     {
-        private readonly AppDbContext _db;
+        private readonly ApiService _api;
 
-        public ViewTasks(AppDbContext db)
+        public ViewTasks(ApiService api)
         {
             InitializeComponent();
-            _db = db;
-            LoadTasks();
+            _api = api;
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
-            LoadTasks(); // Refresh every time page appears
+            await LoadTasks();
         }
 
-        private void LoadTasks()
+        // ✅ LOAD FROM API
+        private async Task LoadTasks()
         {
-            TasksList.ItemsSource = _db.Tasks.ToList();
+            var tasks = await _api.GetTasksAsync();
+            TasksList.ItemsSource = tasks;
         }
 
-        // ✅ DELETE (Swipe)
+        // ✅ DELETE
         private async void OnDeleteTaskClicked(object sender, EventArgs e)
         {
             bool isConfirmed = await OnDeleteButtonClickedConfirmation();
-
             if (!isConfirmed) return;
 
             if (sender is SwipeItem swipeItem && swipeItem.BindingContext is TrackTask task)
             {
-                _db.Tasks.Remove(task);
-                _db.SaveChanges();
-                LoadTasks();
+                await _api.DeleteTaskAsync(task.Id);
 
-                var toast = Toast.Make("Task deleted successfully!", ToastDuration.Short, 14);
+                await LoadTasks();
+
+                var toast = Toast.Make("Task deleted successfully!", ToastDuration.Short);
                 await toast.Show();
             }
         }
 
-        // ✅ EDIT (used from popup/menu)
+        // ✅ EDIT
         private async Task EditTask(TrackTask task)
         {
             if (task == null) return;
 
-            await Navigation.PushAsync(new CreateTasks(_db, task));
+            await Navigation.PushAsync(new CreateTasks(_api, task));
         }
 
         // ✅ BACK
         private async void OnBackTaskClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new MainPage());
+            await Navigation.PopAsync(); // 🔥 better than PushAsync
         }
 
-        // ✅ CONFIRM DELETE POPUP
+        // ✅ CONFIRM POPUP
         private async Task<bool> OnDeleteButtonClickedConfirmation()
         {
             var popup = new ConfirmPopup("Are you sure?");
             return await popup.ShowAsync(this);
         }
 
-        // ✅ THREE DOT MENU (MAIN ACTION HANDLER)
+        // ✅ 3-DOT MENU
         private async void OnMoreClicked(object sender, EventArgs e)
         {
             var task = (sender as BindableObject)?.BindingContext as TrackTask;
-
             if (task == null) return;
 
             string action = await DisplayActionSheet(
@@ -97,17 +93,18 @@ namespace TrackYourTasks
             }
         }
 
-        // ✅ MARK COMPLETE (centralized logic)
+        // ✅ MARK COMPLETE
         private async Task MarkTaskCompleted(TrackTask task)
         {
             if (task == null || task.IsCompleted) return;
 
             task.IsCompleted = true;
 
-            _db.SaveChanges();   // 🔥 Persist to DB
-            LoadTasks();         // 🔥 Refresh UI
+            await _api.UpdateTaskAsync(task); // 🔥 API call
 
-            var toast = Toast.Make("Task marked as completed!", ToastDuration.Short, 14);
+            await LoadTasks();
+
+            var toast = Toast.Make("Task marked as completed!", ToastDuration.Short);
             await toast.Show();
         }
     }

@@ -1,13 +1,6 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using Plugin.LocalNotification;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TrackYourTasks.Data;
-using TrackYourTasks.Interfaces;
 using TrackYourTasks.Models;
 using TrackYourTasks.Services;
 
@@ -15,119 +8,96 @@ namespace TrackYourTasks
 {
     public partial class CreateTasks : ContentPage
     {
-        private readonly AppDbContext _db;
+        private readonly ApiService _api;
         private TrackTask _taskBeingEdited;
 
-        // Constructor for "create new task"
-        public CreateTasks(AppDbContext db)
+        // ✅ CREATE
+        public CreateTasks(ApiService api)
         {
             InitializeComponent();
-            _db = db;
+            _api = api; // 🔥 FIX
         }
 
-        // Constructor for "edit existing task"
-        public CreateTasks(AppDbContext db, TrackTask taskToEdit) : this(db)
+        // ✅ EDIT
+        public CreateTasks(ApiService api, TrackTask taskToEdit) : this(api)
         {
+            if (taskToEdit == null) return;
+
             _taskBeingEdited = taskToEdit;
 
-            // Pre-fill UI fields
             TitleEntry.Text = taskToEdit.Title;
             DescEntry.Text = taskToEdit.Description;
 
             AddTaskButton.Text = "Update Task";
         }
 
+        // ✅ CANCEL
         private async void OnCancelTaskClicked(object sender, EventArgs e)
         {
-            if(AddTaskButton.Text == "Update Task")
-            {
-                try
-                {
-                    // Prefer Navigation.PushAsync when not using Shell.Current
-                    var page = new ViewTasks(new AppDbContext());
-
-                    if (Navigation != null)
-                        await Navigation.PushAsync(page);
-                    else if (Application.Current?.MainPage?.Navigation != null)
-                        await Application.Current.MainPage.Navigation.PushAsync(page);
-                    else
-                        await DisplayAlert("Error", "Navigation is not available", "OK");
-
-                    Console.WriteLine("View Task Button Clicked");
-                }
-                catch (Exception ex)
-                {
-                    await DisplayAlert("Error", $"Failed to navigate to ViewTasks: {ex.Message}", "OK");
-                }
-            }
+            await Navigation.PopAsync(); // 🔥 clean navigation
         }
+
+        // ✅ SAVE (CREATE / UPDATE)
         private async void OnAddTaskClicked(object sender, EventArgs e)
         {
-            var request = new NotificationRequest();
+            if (string.IsNullOrWhiteSpace(TitleEntry.Text))
+            {
+                await DisplayAlert("Validation", "Title is required", "OK");
+                return;
+            }
 
-            var selectedDate = TaskDatePicker.Date;       // DateTime (date part)
-            var selectedTime = TaskTimePicker.Time;       // TimeSpan (time part)
-
-            // Combine into a full DateTime
-            var notifyTime = selectedDate.Date + selectedTime;
+            var notifyTime = TaskDatePicker.Date + TaskTimePicker.Time;
 
             string message = "TYT - Reminder - ";
 
+            TrackTask task;
+
             if (_taskBeingEdited == null)
             {
-                var task = new TrackTask
+                // 🔥 CREATE
+                task = new TrackTask
                 {
                     Title = TitleEntry.Text ?? string.Empty,
                     Description = DescEntry.Text ?? string.Empty,
-                    IsCompleted = false
+                    IsCompleted = false,
+                    CreatedAt = DateTime.UtcNow
                 };
 
-                _db.Tasks.Add(task);
-                await _db.SaveChangesAsync();
-
-                request = new NotificationRequest
-                {
-                    NotificationId = task.Id,
-                    Title = task.Title,
-                    Description = message + task.Description,
-                    Schedule = new NotificationRequestSchedule
-                    {
-                        NotifyTime = notifyTime // or any specific DateTime
-                    },
-                    ReturningData = "PendingTasksPage"
-                };
+                await _api.CreateTaskAsync(task);
 
                 await Toast.Make("Task created!", ToastDuration.Short).Show();
             }
             else
             {
+                // 🔥 UPDATE
                 _taskBeingEdited.Title = TitleEntry.Text ?? string.Empty;
                 _taskBeingEdited.Description = DescEntry.Text ?? string.Empty;
 
-                _db.Tasks.Update(_taskBeingEdited);
-                await _db.SaveChangesAsync();
+                await _api.UpdateTaskAsync(_taskBeingEdited);
 
-                request = new NotificationRequest
-                {
-                    NotificationId = _taskBeingEdited.Id,
-                    Title = _taskBeingEdited.Title,
-                    Description = message + _taskBeingEdited.Description,
-                    Schedule = new NotificationRequestSchedule
-                    {
-                        NotifyTime = _taskBeingEdited.CreatedAt // or any specific DateTime
-                    },
-                    ReturningData = "PendingTasksPage"
-                };
+                task = _taskBeingEdited;
 
                 await Toast.Make("Task updated!", ToastDuration.Short).Show();
             }
 
-           
+            // 🔥 Notification fix (string → int)
+            int notificationId = task.Id?.GetHashCode() ?? new Random().Next();
+
+            var request = new NotificationRequest
+            {
+                NotificationId = notificationId,
+                Title = task.Title,
+                Description = message + task.Description,
+                Schedule = new NotificationRequestSchedule
+                {
+                    NotifyTime = notifyTime
+                },
+                ReturningData = "PendingTasksPage"
+            };
 
             await LocalNotificationCenter.Current.Show(request);
 
-            await Navigation.PopAsync(); // go back to ViewTasks
+            await Navigation.PopAsync();
         }
     }
-
 }

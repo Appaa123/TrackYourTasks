@@ -1,77 +1,80 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TrackYourTasks.Data;
-using TrackYourTasks.Interfaces;
-using TrackYourTasks.Models;
+﻿using TrackYourTasks.Models;
+using TrackYourTasks.Services;
 
 namespace TrackYourTasks
 {
-    public partial class SecondPage : ContentPage
-    {
-        private readonly AppDbContext _db;
-        public SecondPage(AppDbContext db)
-        {
-            InitializeComponent();
-            _db = db;
-            LoadTasks();
-        }
+	public partial class SecondPage : ContentPage
+	{
+		private readonly ApiService _api;
+		private List<TrackTask> _tasks = new();
 
-        private void LoadTasks()
-        {
-            TasksList.ItemsSource = _db.Tasks.ToList();
-        }
-        private async void OnYesClicked(object? sender, EventArgs e)
-        {
-            var task = await _db.Tasks.FirstOrDefaultAsync();
+		public SecondPage(ApiService api)
+		{
+			InitializeComponent();
+			_api = api;
+		}
 
-            var button = sender as Button;
-            string taskName = button?.CommandParameter?.ToString();
+		protected override async void OnAppearing()
+		{
+			base.OnAppearing();
+			await LoadTasks();
+		}
 
-            if (task == null)
-            {
-                // First time entry
-                task = new TrackTask
-                {
-                    Title = taskName ?? "Unknown Task",
-                    Id = Guid.NewGuid().Variant,
-                    IsCompleted = true,
-                    IsPartiallyCompleted = false,
-                    CreatedAt = DateTime.UtcNow,
-                    Description = "Tasks is completed by the user."
+		// ✅ Load from API
+		private async Task LoadTasks()
+		{
+			_tasks = await _api.GetTasksAsync();
+			TasksList.ItemsSource = _tasks;
+		}
 
-                };
+		// ✅ YES → mark completed / create if not exists
+		private async void OnYesClicked(object? sender, EventArgs e)
+		{
+			var button = sender as Button;
+			string taskName = button?.CommandParameter?.ToString();
 
-                _db.Tasks.Add(task);
-            }
-            else
-            {
-                // Update existing row
-                task.IsCompleted = true;
-                task.Description = "User clicked YES";
-            }
+			var task = _tasks.FirstOrDefault(t => t.Title == taskName);
 
-            await _db.SaveChangesAsync();
-        }
-        private async void OnNoClicked(object? sender, EventArgs e)
-        {
-            var task = await _db.Tasks.FirstOrDefaultAsync();
+			if (task == null)
+			{
+				// 🔥 CREATE
+				task = new TrackTask
+				{
+					Title = taskName ?? "Unknown Task",
+					Description = "Task completed by user",
+					IsCompleted = true,
+					CreatedAt = DateTime.UtcNow
+				};
 
-            var button = sender as Button;
-            var taskName = button?.CommandParameter?.ToString();
+				await _api.CreateTaskAsync(task);
+			}
+			else
+			{
+				// 🔥 UPDATE
+				task.IsCompleted = true;
+				task.Description = "User clicked YES";
 
-            if (task == null)
-                return;
+				await _api.UpdateTaskAsync(task);
+			}
 
-            task.IsCompleted = false;
-            task.Title = taskName ?? "Unknown Task";
+			await LoadTasks();
+		}
 
-            await _db.SaveChangesAsync();
+		// ❌ NO → mark incomplete
+		private async void OnNoClicked(object? sender, EventArgs e)
+		{
+			var button = sender as Button;
+			string taskName = button?.CommandParameter?.ToString();
 
-            //Navigation.PushAsync(new TasksPage());
-        }
-    }
+			var task = _tasks.FirstOrDefault(t => t.Title == taskName);
+			if (task == null) return;
+
+			task.IsCompleted = false;
+			task.Description = "User clicked NO";
+
+			await _api.UpdateTaskAsync(task);
+
+			await LoadTasks();
+		}
+	}
 }

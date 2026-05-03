@@ -1,62 +1,71 @@
 ﻿using Microcharts;
 using SkiaSharp;
-using TrackYourTasks.Data;
+using TrackYourTasks.Models;
+using TrackYourTasks.Services;
 
 namespace TrackYourTasks;
 
 public partial class AnalyticsPage : ContentPage
 {
-    public AnalyticsPage()
-    {
-        InitializeComponent();
-        LoadChart();
-    }
+	private readonly ApiService _api;
 
-    private void LoadChart()
-    {
-        using var db = new AppDbContext();
+	public AnalyticsPage(ApiService api)
+	{
+		InitializeComponent();
+		_api = api;
+	}
 
-        var completed = db.Tasks.Count(t => t.IsCompleted);
-        var pending = db.Tasks.Count(t => !t.IsCompleted && !t.IsSkipped);
-        var skipped = db.Tasks.Count(t => t.IsSkipped);
-        var partial = db.Tasks.Count(t => t.IsPartiallyCompleted);
+	protected override async void OnAppearing()
+	{
+		base.OnAppearing();
+		await LoadChart();
+	}
 
-        var entries = new List<ChartEntry>
-        {
-            new ChartEntry(completed)
-            {
-                Label = "Completed",
-                ValueLabel = completed.ToString(),
-                Color = SKColor.Parse("#4CAF50")
-            },
-            new ChartEntry(pending)
-            {
-                Label = "Pending",
-                ValueLabel = pending.ToString(),
-                Color = SKColor.Parse("#FFB74D")
-            },
-            new ChartEntry(skipped)
-            {
-                Label = "Skipped",
-                ValueLabel = skipped.ToString(),
-                Color = SKColor.Parse("#64B5F6")
-            },
-            new ChartEntry(partial)
-            {
-                Label = "Partial",
-                ValueLabel = partial.ToString(),
-                Color = SKColor.Parse("#BA68C8")
-            }
-        };
+	private async Task LoadChart()
+	{
+		var tasks = await _api.GetTasksAsync();
 
-        PieChart.Chart = new PieChart
-        {
-            Entries = entries
-        };
-    }
+		var completed = tasks.Count(t => t.IsCompleted);
+		var pending = tasks.Count(t => !t.IsCompleted && !t.IsSkipped);
+		var skipped = tasks.Count(t => t.IsSkipped);
+		var partial = tasks.Count(t => t.IsPartiallyCompleted);
 
-    private async void OnBackClicked(object sender, EventArgs e)
-    {
-        await Navigation.PopAsync();
-    }
+		var entries = new List<ChartEntry>
+		{
+			new ChartEntry(completed)
+			{
+				Label = "Completed",
+				ValueLabel = completed.ToString(),
+				Color = SKColor.Parse("#4CAF50")
+			},
+			new ChartEntry(pending)
+			{
+				Label = "Pending",
+				ValueLabel = pending.ToString(),
+				Color = SKColor.Parse("#FFB74D")
+			},
+			new ChartEntry(skipped)
+			{
+				Label = "Skipped",
+				ValueLabel = skipped.ToString(),
+				Color = SKColor.Parse("#64B5F6")
+			},
+			new ChartEntry(partial)
+			{
+				Label = "Partial",
+				ValueLabel = partial.ToString(),
+				Color = SKColor.Parse("#BA68C8")
+			}
+		};
+
+		PieChart.Chart = new PieChart
+		{
+			Entries = entries
+		};
+	}
+
+	private async void OnBackClicked(object sender, EventArgs e)
+	{
+		await Navigation.PopAsync();
+	}
 }

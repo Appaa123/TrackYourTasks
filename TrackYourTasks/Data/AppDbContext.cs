@@ -16,7 +16,7 @@ namespace TrackYourTasks.Data
         public AppDbContext()
         {
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            _dbPath = Path.Combine(folder, "tasks.db");
+			_dbPath = Path.Combine(folder, "tasks.db");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

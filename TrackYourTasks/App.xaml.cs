@@ -1,34 +1,57 @@
-﻿using TrackYourTasks.Data;
-using TrackYourTasks.Interfaces; // Add this using directive
+﻿using TrackYourTasks.Services;
 
 namespace TrackYourTasks
 {
-    public partial class App : Application
-    { 
-        
-        private bool isAnyPendingTasks = false;
+	public partial class App : Application
+	{
+		private readonly IServiceProvider _services;
 
-        private AppDbContext _db;
-        public App()
-        {
-            InitializeComponent();
-            using var db = new AppDbContext();
-            db.Database.EnsureCreated();
-            _db = db;
-            Services.NotificationScheduler.ScheduleDailyNotifications();
-            isAnyPendingTasks = db.Tasks.Any(task => !task.IsCompleted);
-        }
+		public App(IServiceProvider services)
+		{
+			InitializeComponent();
 
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            if (isAnyPendingTasks)
-            {
-                return new Window(new NavigationPage(new PendingTasksPage(_db)));
-            }
-            else
-            {
-                return new Window(new NavigationPage(new MainPage()));
-            }
-        }
-    }
+			_services = services;
+
+			// Temporary loading page (better UX)
+			MainPage = new ContentPage
+			{
+				Content = new ActivityIndicator
+				{
+					IsRunning = true,
+					VerticalOptions = LayoutOptions.Center,
+					HorizontalOptions = LayoutOptions.Center
+				}
+			};
+
+			InitializeApp();
+
+			Services.NotificationScheduler.ScheduleDailyNotifications();
+		}
+
+		private async void InitializeApp()
+		{
+			try
+			{
+				var api = _services.GetRequiredService<ApiService>();
+
+				var tasks = await api.GetTasksAsync();
+				bool isAnyPendingTasks = tasks.Any(t => !t.IsCompleted);
+
+				if (isAnyPendingTasks)
+				{
+					MainPage = new NavigationPage(new PendingTasksPage(api));
+				}
+				else
+				{
+					MainPage = new NavigationPage(new MainPage(api));
+				}
+			}
+			catch
+			{
+				var api = _services.GetRequiredService<ApiService>();
+
+				MainPage = new NavigationPage(new MainPage(api));
+			}
+		}
+	}
 }
