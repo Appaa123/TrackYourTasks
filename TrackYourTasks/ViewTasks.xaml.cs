@@ -1,21 +1,18 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TrackYourTasks.Data;
-using TrackYourTasks.Interfaces;
 using TrackYourTasks.Models;
 using TrackYourTasks.Popups;
-using TrackYourTasks.Services;
 
 namespace TrackYourTasks
 {
     public partial class ViewTasks : ContentPage
     {
         private readonly AppDbContext _db;
+
         public ViewTasks(AppDbContext db)
         {
             InitializeComponent();
@@ -26,7 +23,7 @@ namespace TrackYourTasks
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            LoadTasks();  // refresh list every time page becomes visible
+            LoadTasks(); // Refresh every time page appears
         }
 
         private void LoadTasks()
@@ -34,55 +31,84 @@ namespace TrackYourTasks
             TasksList.ItemsSource = _db.Tasks.ToList();
         }
 
+        // ✅ DELETE (Swipe)
         private async void OnDeleteTaskClicked(object sender, EventArgs e)
         {
-            bool isConfirmed = await OnDeleteButtonClickedConfirmation(sender, e);
+            bool isConfirmed = await OnDeleteButtonClickedConfirmation();
 
-            if (isConfirmed)
+            if (!isConfirmed) return;
+
+            if (sender is SwipeItem swipeItem && swipeItem.BindingContext is TrackTask task)
             {
-                if (sender is Button button && button.BindingContext is TrackTask task)
-                {
-                    _db.Tasks.Remove(task);
-                    _db.SaveChanges();
-                    LoadTasks();
-                    // ✅ Show success toast
-                    var toast = Toast.Make("Task deleted successfully!", ToastDuration.Short, 14);
-                    await toast.Show();
-                }
+                _db.Tasks.Remove(task);
+                _db.SaveChanges();
+                LoadTasks();
+
+                var toast = Toast.Make("Task deleted successfully!", ToastDuration.Short, 14);
+                await toast.Show();
             }
         }
-        private async void OnEditTaskClicked(object sender, EventArgs e)
+
+        // ✅ EDIT (used from popup/menu)
+        private async Task EditTask(TrackTask task)
         {
-            if (sender is Button button && button.BindingContext is TrackTask task)
-            {
-                await Navigation.PushAsync(new CreateTasks(_db, task));
-            }
+            if (task == null) return;
+
+            await Navigation.PushAsync(new CreateTasks(_db, task));
         }
+
+        // ✅ BACK
         private async void OnBackTaskClicked(object sender, EventArgs e)
         {
-
             await Navigation.PushAsync(new MainPage());
-
         }
 
-        private async Task<bool> OnDeleteButtonClickedConfirmation(object sender, EventArgs e)
+        // ✅ CONFIRM DELETE POPUP
+        private async Task<bool> OnDeleteButtonClickedConfirmation()
         {
             var popup = new ConfirmPopup("Are you sure?");
-            bool result = await popup.ShowAsync(this); // ✅ Custom ShowAsync to get result
+            return await popup.ShowAsync(this);
+        }
 
-            if (result)
+        // ✅ THREE DOT MENU (MAIN ACTION HANDLER)
+        private async void OnMoreClicked(object sender, EventArgs e)
+        {
+            var task = (sender as BindableObject)?.BindingContext as TrackTask;
+
+            if (task == null) return;
+
+            string action = await DisplayActionSheet(
+                "Task Options",
+                "Cancel ❌",
+                null,
+                "✏️ Edit",
+                "✅ Mark as Completed"
+            );
+
+            switch (action)
             {
-                return true;
-                //await DisplayAlert("Confirmed", "Action executed.", "OK");
-                // Proceed with the confirmed action
-            }
-            else
-            {
-                return false;
-                //await DisplayAlert("Cancelled", "Action was cancelled.", "OK");
+                case "✏️ Edit":
+                    await EditTask(task);
+                    break;
+
+                case "✅ Mark as Completed":
+                    await MarkTaskCompleted(task);
+                    break;
             }
         }
 
+        // ✅ MARK COMPLETE (centralized logic)
+        private async Task MarkTaskCompleted(TrackTask task)
+        {
+            if (task == null || task.IsCompleted) return;
 
+            task.IsCompleted = true;
+
+            _db.SaveChanges();   // 🔥 Persist to DB
+            LoadTasks();         // 🔥 Refresh UI
+
+            var toast = Toast.Make("Task marked as completed!", ToastDuration.Short, 14);
+            await toast.Show();
+        }
     }
 }

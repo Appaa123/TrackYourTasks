@@ -39,9 +39,27 @@ namespace TrackYourTasks
 
         private async void OnCancelTaskClicked(object sender, EventArgs e)
         {
+            if(AddTaskButton.Text == "Update Task")
+            {
+                try
+                {
+                    // Prefer Navigation.PushAsync when not using Shell.Current
+                    var page = new ViewTasks(new AppDbContext());
 
-            await Navigation.PushAsync(new MainPage());
+                    if (Navigation != null)
+                        await Navigation.PushAsync(page);
+                    else if (Application.Current?.MainPage?.Navigation != null)
+                        await Application.Current.MainPage.Navigation.PushAsync(page);
+                    else
+                        await DisplayAlert("Error", "Navigation is not available", "OK");
 
+                    Console.WriteLine("View Task Button Clicked");
+                }
+                catch (Exception ex)
+                {
+                    await DisplayAlert("Error", $"Failed to navigate to ViewTasks: {ex.Message}", "OK");
+                }
+            }
         }
         private async void OnAddTaskClicked(object sender, EventArgs e)
         {
