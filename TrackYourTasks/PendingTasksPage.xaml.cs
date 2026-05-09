@@ -2,6 +2,7 @@
 using CommunityToolkit.Maui.Core;
 using TrackYourTasks.Models;
 using TrackYourTasks.Services;
+using Microsoft.Maui.Controls;
 
 namespace TrackYourTasks;
 
@@ -11,10 +12,34 @@ public partial class PendingTasksPage : ContentPage
     private List<TrackTask> _tasksBeingEdited = new();
     private List<string> skippedTasks = new();
 
+    // runtime spinner
+    private ActivityIndicator _loadingIndicator;
+    private int _loadingCount = 0;
+
     public PendingTasksPage(ApiService api)
     {
         InitializeComponent();
         _api = api;
+
+        // Preserve existing visual tree and overlay spinner
+        var existingContent = this.Content;
+        var rootGrid = new Grid();
+
+        if (existingContent != null)
+        {
+            rootGrid.Children.Add(existingContent);
+        }
+
+        _loadingIndicator = new ActivityIndicator
+        {
+            IsVisible = false,
+            IsRunning = false,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        rootGrid.Children.Add(_loadingIndicator);
+        this.Content = rootGrid;
     }
 
     protected override async void OnAppearing()
@@ -23,29 +48,59 @@ public partial class PendingTasksPage : ContentPage
         await LoadTasks();
     }
 
+    // helper to support nested API calls without flicker
+    private void ShowLoading()
+    {
+        _loadingCount++;
+        if (_loadingCount > 0)
+        {
+            _loadingIndicator.IsVisible = true;
+            _loadingIndicator.IsRunning = true;
+        }
+    }
+
+    private void HideLoading()
+    {
+        _loadingCount = Math.Max(0, _loadingCount - 1);
+        if (_loadingCount == 0)
+        {
+            _loadingIndicator.IsRunning = false;
+            _loadingIndicator.IsVisible = false;
+        }
+    }
+
     // 🔄 Load tasks cleanly
     private async Task LoadTasks()
     {
-        var allTasks = await _api.GetTasksAsync();
-
-        _tasksBeingEdited = allTasks
-            .Where(t => !t.IsCompleted && !t.IsSkipped)
-            .Where(t => !skippedTasks.Contains(t.Id))
-            .ToList();
-
-        if (!_tasksBeingEdited.Any())
+        try
         {
-            await Toast.Make("No pending tasks found. Enjoy your day!", ToastDuration.Short).Show();
+            ShowLoading();
 
-            await Navigation.PushAsync(new MainPage(_api)); // 🔥 FIX
-            return;
+            var allTasks = await _api.GetTasksAsync();
+
+            _tasksBeingEdited = allTasks
+                .Where(t => !t.IsCompleted && !t.IsSkipped)
+                .Where(t => !skippedTasks.Contains(t.Id))
+                .ToList();
+
+            if (!_tasksBeingEdited.Any())
+            {
+                await Toast.Make("No pending tasks found. Enjoy your day!", ToastDuration.Short).Show();
+
+                await Navigation.PushAsync(new MainPage(_api)); // 🔥 FIX
+                return;
+            }
+
+            TasksCollection.ItemsSource = _tasksBeingEdited;
+
+            EmptyMessage.IsVisible = !_tasksBeingEdited.Any();
+            TasksCollection.IsVisible = _tasksBeingEdited.Any();
+            SkipAllButton.Text = _tasksBeingEdited.Any() ? "Skip All" : "Continue";
         }
-
-        TasksCollection.ItemsSource = _tasksBeingEdited;
-
-        EmptyMessage.IsVisible = !_tasksBeingEdited.Any();
-        TasksCollection.IsVisible = _tasksBeingEdited.Any();
-        SkipAllButton.Text = _tasksBeingEdited.Any() ? "Skip All" : "Continue";
+        finally
+        {
+            HideLoading();
+        }
     }
 
     // ✅ YES → complete
@@ -59,11 +114,21 @@ public partial class PendingTasksPage : ContentPage
 
         task.IsCompleted = true;
 
-        await _api.UpdateTaskAsync(task);
-
-        await Toast.Make("Task marked completed!", ToastDuration.Short).Show();
-
-        await LoadTasks(); // 🔥 FIX
+        try
+        {
+            ShowLoading();
+            await _api.UpdateTaskAsync(task);
+            await Toast.Make("Task marked completed!", ToastDuration.Short).Show();
+            await LoadTasks(); // 🔥 FIX
+        }
+        catch (Exception)
+        {
+            await Toast.Make("Failed to mark task completed.", ToastDuration.Short).Show();
+        }
+        finally
+        {
+            HideLoading();
+        }
     }
 
     // ❌ NO → skip temporarily
