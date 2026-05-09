@@ -6,9 +6,10 @@ namespace TrackYourTasks.Models
 {
     public class DailyTask
     {
+        // API returns "id" (camelCase). PropertyNameCaseInsensitive=true in serializer will map it to this.
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         public string Title { get; set; } = string.Empty;
 
@@ -16,22 +17,32 @@ namespace TrackYourTasks.Models
 
         public bool IsCompleted { get; set; }
 
-        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // UI-only selection flag for bulk actions — ignored by BSON/DB
         [BsonIgnore]
         public bool IsSelected { get; set; }
 
-        // Persist recurrence time so the client will send/receive it from the API.
-        // Store TimeSpan as string in MongoDB JSON (e.g. "01:30:00").
-        [BsonRepresentation(BsonType.String)]
-        public TimeSpan? RecurrenceTime { get; set; }
+        // API returns ISO datetime string or null
+        public DateTime? RecurrenceTime { get; set; }
 
-        // Calculates the next occurrence of this task based on the stored time
+        // UI helper (not serialized)
         [BsonIgnore]
-        public DateTime? NextOccurrence => RecurrenceTime.HasValue
-            ? DateTime.Today.Add(RecurrenceTime.Value)
-            : (DateTime?)null;
+        public DateTime? NextOccurrence
+        {
+            get
+            {
+                if (!RecurrenceTime.HasValue) return null;
+                var tod = RecurrenceTime.Value.TimeOfDay;
+                var occurrence = DateTime.Today.Add(tod);
+                return occurrence < DateTime.Now ? occurrence.AddDays(1) : occurrence;
+            }
+        }
+
+        [BsonIgnore]
+        public string CreatedAtLabel => CreatedAt == default ? string.Empty : CreatedAt.ToLocalTime().ToString("MMM d, yyyy h:mm tt");
+
+        [BsonIgnore]
+        public string RecurrenceLabel => RecurrenceTime.HasValue ? RecurrenceTime.Value.ToLocalTime().ToString("h:mm tt") : string.Empty;
     }
 }

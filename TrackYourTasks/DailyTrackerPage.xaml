@@ -32,19 +32,45 @@
                                 </SwipeItems>
                             </SwipeView.RightItems>
 
+                            <!-- Clean tile: only one left selection checkbox and one right completed checkbox -->
                             <Grid Padding="8" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
-                                <!-- selection checkbox for bulk operations -->
-                                <CheckBox IsChecked="{Binding IsSelected}" VerticalOptions="Center" />
+                                <!-- left: selection checkbox -->
+                                <CheckBox
+                                    Grid.Column="0"
+                                    IsChecked="{Binding IsSelected}"
+                                    VerticalOptions="Center"
+                                    AutomationId="SelectCheckBox" />
 
-                                <!-- title: tap to edit -->
-                                <Label Grid.Column="1" Text="{Binding Title}" VerticalOptions="Center" LineBreakMode="TailTruncation">
-                                    <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnTitleTapped" NumberOfTapsRequired="1" />
-                                    </Label.GestureRecognizers>
-                                </Label>
+                                <!-- center: title/description/meta -->
+                                <StackLayout Grid.Column="1" Spacing="4" Margin="8,0" VerticalOptions="Center">
+                                    <Label
+                                        Text="{Binding Title, TargetNullValue='(no title)'}"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        TextColor="{StaticResource PrimaryDarkText}" />
 
-                                <!-- completed indicator / single toggle -->
-                                <CheckBox Grid.Column="2" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" CheckedChanged="OnItemCompletedChanged" />
+                                    <Label
+                                        Text="{Binding Description, TargetNullValue=''}"
+                                        FontSize="13"
+                                        TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
+                                        LineBreakMode="TailTruncation" />
+
+                                    <StackLayout Orientation="Horizontal" Spacing="12">
+                                        <Label Text="{Binding CreatedAtLabel}" FontSize="11"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray300}}" />
+                                        <Label Text="{Binding RecurrenceLabel}" FontSize="11"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray300}}"
+                                               IsVisible="{Binding RecurrenceTime, Converter={StaticResource NullToBoolConverter}}" />
+                                    </StackLayout>
+                                </StackLayout>
+
+                                <!-- right: single completed checkbox -->
+                                <CheckBox
+                                    Grid.Column="2"
+                                    IsChecked="{Binding IsCompleted}"
+                                    VerticalOptions="Center"
+                                    CheckedChanged="OnItemCompletedChanged"
+                                    AutomationId="CompletedCheckBox" />
                             </Grid>
                         </SwipeView>
                     </DataTemplate>

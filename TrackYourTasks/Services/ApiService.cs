@@ -5,13 +5,15 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using TrackYourTasks.Models;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Diagnostics;
 
 namespace TrackYourTasks.Services
 {
     public class ApiService
     {
         private readonly HttpClient _http;
-
 
         public ApiService(string baseUrl)
         {
@@ -47,8 +49,53 @@ namespace TrackYourTasks.Services
 
         public async Task<List<DailyTask>> GetDailyTasksAsync()
         {
-            return await _http.GetFromJsonAsync<List<DailyTask>>("api/dailytasks")
-                   ?? new List<DailyTask>();
+            var json = await _http.GetStringAsync("api/dailytasks");
+            Debug.WriteLine("GetDailyTasks raw JSON:");
+            Debug.WriteLine(json);
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            try
+            {
+                var root = JsonSerializer.Deserialize<JsonElement>(json, options);
+                if (root.ValueKind != JsonValueKind.Array)
+                    return new List<DailyTask>();
+
+                var list = new List<DailyTask>();
+                foreach (var item in root.EnumerateArray())
+                {
+                    // case A: { "task": { ... } }
+                    if (item.ValueKind == JsonValueKind.Object && item.TryGetProperty("task", out var taskEl))
+                    {
+                        var task = taskEl.Deserialize<DailyTask>(options);
+                        if (task != null) list.Add(task);
+                        continue;
+                    }
+
+                    // case B: item is the task object itself
+                    if (item.ValueKind == JsonValueKind.Object)
+                    {
+                        var task = item.Deserialize<DailyTask>(options);
+                        if (task != null) list.Add(task);
+                    }
+                }
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Deserialization failed: {ex}");
+                return new List<DailyTask>();
+            }
+        }
+
+        // envelope used only for deserialization of the API shape
+        private class DailyTaskEnvelope
+        {
+            public DailyTask? Task { get; set; }
         }
 
         // Return the created DailyTask returned by the API (so client can get the assigned Id)
