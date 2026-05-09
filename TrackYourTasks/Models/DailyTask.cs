@@ -16,14 +16,16 @@ namespace TrackYourTasks.Models
 
         public bool IsCompleted { get; set; }
 
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // UI-only selection flag for bulk actions — ignored by BSON/DB
         [BsonIgnore]
         public bool IsSelected { get; set; }
 
-        // Daily recurring task time, if any
-        [BsonIgnore]
+        // Persist recurrence time so the client will send/receive it from the API.
+        // Store TimeSpan as string in MongoDB JSON (e.g. "01:30:00").
+        [BsonRepresentation(BsonType.String)]
         public TimeSpan? RecurrenceTime { get; set; }
 
         // Calculates the next occurrence of this task based on the stored time
