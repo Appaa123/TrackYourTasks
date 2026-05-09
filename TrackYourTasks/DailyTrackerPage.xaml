@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TrackYourTasks.DailyTrackerPage"
+    Title="Daily Tracker"
+    BackgroundImageSource="background_theme.jpg">
+
+    <ContentPage.Content>
+        <Grid x:Name="RootGrid" RowDefinitions="Auto,*,Auto" Padding="12" RowSpacing="12">
+            <!-- Header -->
+            <StackLayout Orientation="Horizontal" Spacing="8" HorizontalOptions="FillAndExpand">
+                <Button Text="Add" x:Name="AddButton" />
+                <Button Text="Complete Selected" x:Name="CompleteSelectedButton" />
+                <Button Text="Delete Selected" x:Name="DeleteSelectedButton" />
+                <Label Text="Daily Tasks" VerticalOptions="Center" HorizontalOptions="EndAndExpand" />
+            </StackLayout>
+
+            <!-- Tasks list -->
+            <CollectionView x:Name="TasksCollection" Grid.Row="1" SelectionMode="None" ItemsLayout="VerticalList">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <SwipeView.LeftItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Text="Delete" BackgroundColor="Crimson" Invoked="OnItemDeleteSwipe" />
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
+                            <SwipeView.RightItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Text="Complete" BackgroundColor="ForestGreen" Invoked="OnItemCompleteSwipe" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+
+                            <Grid Padding="8" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+                                <!-- selection checkbox for bulk operations -->
+                                <CheckBox IsChecked="{Binding IsSelected}" VerticalOptions="Center" />
+
+                                <!-- title: tap to edit -->
+                                <Label Grid.Column="1" Text="{Binding Title}" VerticalOptions="Center" LineBreakMode="TailTruncation">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnTitleTapped" NumberOfTapsRequired="1" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+
+                                <!-- completed indicator / single toggle -->
+                                <CheckBox Grid.Column="2" IsChecked="{Binding IsCompleted}" VerticalOptions="Center" CheckedChanged="OnItemCompletedChanged" />
+                            </Grid>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Footer helper -->
+            <Label Grid.Row="2" x:Name="EmptyLabel" Text="No daily tasks found." HorizontalOptions="Center" IsVisible="False" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

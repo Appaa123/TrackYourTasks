@@ -123,6 +123,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<MauiXaml Update="DailyTrackerPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="PendingTasksPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

@@ -48,6 +48,13 @@
                 Clicked="OnViewTaskButtonClicked"
                 HorizontalOptions="Fill"
                 BackgroundColor="#FFB038"/>
+            <Button
+                Text="Daily Tracker"
+                x:Name="DailyTrackerButton"
+                Clicked="OnDailyTrackerClicked"
+                HorizontalOptions="Fill"
+                VerticalOptions="Center"
+                BackgroundColor="#FFB038"/>
 
             <Label
                 Text="Developed By - Venkat Appaa Rao"

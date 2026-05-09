@@ -57,6 +57,7 @@ namespace TrackYourTasks
 			builder.Services.AddTransient<ViewTasks>();
 			builder.Services.AddTransient<PendingTasksPage>();
 			builder.Services.AddTransient<AnalyticsPage>();
+			builder.Services.AddTransient<DailyTrackerPage>();
 
 #if DEBUG
 			builder.Logging.AddDebug();

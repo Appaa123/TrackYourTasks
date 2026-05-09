@@ -54,6 +54,19 @@ namespace TrackYourTasks
 			}
 		}
 
+		// ➕ Daily tracker
+		private async void OnDailyTrackerClicked(object? sender, EventArgs e)
+		{
+			try
+			{
+				await Navigation.PushAsync(new DailyTrackerPage(_api));
+			}
+			catch (Exception ex)
+			{
+				await DisplayAlert("Error", $"Failed to navigate: {ex.Message}", "OK");
+			}
+		}
+
 		// 🔔 Notification permission
 		private async void RequestNotificationPermission()
 		{
