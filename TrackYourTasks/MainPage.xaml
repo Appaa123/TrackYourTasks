@@ -57,7 +57,7 @@
                 BackgroundColor="#FFB038"/>
 
             <Label
-                Text="Developed By - Venkat Appaa Rao"
+                Text="Developed By - Venkata Appaa Rao"
                 FontFamily="Open Sans"
                 Style="{StaticResource Footerline}"
                 HorizontalOptions="Fill"
