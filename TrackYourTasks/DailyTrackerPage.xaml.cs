@@ -1,47 +1,26 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Controls;
 using TrackYourTasks.Models;
 using TrackYourTasks.Services;
-using Microsoft.Maui.Controls;
-using CommunityToolkit.Maui.Core;
 
 namespace TrackYourTasks
 {
     public partial class DailyTrackerPage : ContentPage
     {
         private readonly ApiService _api;
-        public ObservableCollection<DailyTask> DailyTasks { get; } = new();
-
-        // runtime spinner
-        private ActivityIndicator _loadingIndicator;
         private int _loadingCount = 0;
+
+        public ObservableCollection<DailyTask> DailyTasks { get; } = new();
 
         public DailyTrackerPage(ApiService api)
         {
             InitializeComponent();
             _api = api;
-
-            // overlay spinner while preserving the XAML visual tree
-            var existingContent = this.Content;
-            var rootGrid = new Grid();
-            if (existingContent != null)
-            {
-                rootGrid.Children.Add(existingContent);
-            }
-
-            _loadingIndicator = new ActivityIndicator
-            {
-                IsVisible = false,
-                IsRunning = false,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center
-            };
-
-            rootGrid.Children.Add(_loadingIndicator);
-            this.Content = rootGrid;
 
             TasksCollection.ItemsSource = DailyTasks;
 
@@ -49,10 +28,11 @@ namespace TrackYourTasks
             DeleteSelectedButton.Clicked += async (_, __) => await OnDeleteSelectedClicked();
             CompleteSelectedButton.Clicked += async (_, __) => await OnCompleteSelectedClicked();
 
-            // initial state
             DeleteSelectedButton.IsEnabled = false;
             CompleteSelectedButton.IsEnabled = false;
         }
+
+        // ── Lifecycle ────────────────────────────────────────────────────────────
 
         protected override async void OnAppearing()
         {
@@ -60,13 +40,15 @@ namespace TrackYourTasks
             await LoadDailyTasks();
         }
 
+        // ── Loading helpers ───────────────────────────────────────────────────────
+
         private void ShowLoading()
         {
             _loadingCount++;
             if (_loadingCount > 0)
             {
-                _loadingIndicator.IsVisible = true;
-                _loadingIndicator.IsRunning = true;
+                LoadingIndicator.IsVisible = true;
+                LoadingIndicator.IsRunning = true;
             }
         }
 
@@ -75,10 +57,12 @@ namespace TrackYourTasks
             _loadingCount = Math.Max(0, _loadingCount - 1);
             if (_loadingCount == 0)
             {
-                _loadingIndicator.IsRunning = false;
-                _loadingIndicator.IsVisible = false;
+                LoadingIndicator.IsRunning = false;
+                LoadingIndicator.IsVisible = false;
             }
         }
+
+        // ── Data ─────────────────────────────────────────────────────────────────
 
         private async Task LoadDailyTasks()
         {
@@ -86,12 +70,12 @@ namespace TrackYourTasks
             {
                 ShowLoading();
                 var tasks = await _api.GetDailyTasksAsync();
+
                 DailyTasks.Clear();
-                foreach (var t in tasks) DailyTasks.Add(t);
+                foreach (var t in tasks)
+                    DailyTasks.Add(t);
 
                 EmptyLabel.IsVisible = !DailyTasks.Any();
-
-                // update bulk action buttons state
                 UpdateBulkActionButtons();
             }
             catch (Exception)
@@ -104,11 +88,19 @@ namespace TrackYourTasks
             }
         }
 
+        // ── Add ───────────────────────────────────────────────────────────────────
+
         private async Task OnAddClicked()
         {
-            var title = await DisplayPromptAsync("New Daily Task", "Title", initialValue: string.Empty, maxLength: 20);
-            var description = await DisplayPromptAsync("Description", "Title", initialValue: string.Empty, maxLength: 200);
+            var title = await DisplayPromptAsync(
+                "New Daily Task", "Title",
+                initialValue: string.Empty, maxLength: 20);
+
             if (string.IsNullOrWhiteSpace(title)) return;
+
+            var description = await DisplayPromptAsync(
+                "Description", "Description",
+                initialValue: string.Empty, maxLength: 200);
 
             var newTask = new DailyTask
             {
@@ -121,24 +113,16 @@ namespace TrackYourTasks
             try
             {
                 ShowLoading();
-
-                // call API which returns the created object (with Id assigned by server)
                 var created = await _api.CreateDailyTaskAsync(newTask);
 
-                // If API returned the created item, add it to the collection; otherwise reload
                 if (created != null && !string.IsNullOrWhiteSpace(created.Id))
-                {
                     DailyTasks.Insert(0, created);
-                }
                 else
-                {
                     await LoadDailyTasks();
-                }
 
-                await Toast.Make("Task added", ToastDuration.Short).Show();
-
-                // ensure bulk button states are correct after adding
+                EmptyLabel.IsVisible = !DailyTasks.Any();
                 UpdateBulkActionButtons();
+                await Toast.Make("Task added", ToastDuration.Short).Show();
             }
             catch (Exception)
             {
@@ -150,57 +134,11 @@ namespace TrackYourTasks
             }
         }
 
-        private async void OnTitleTapped(object sender, EventArgs e)
-        {
-            if (!(sender is Label lbl) || !(lbl.BindingContext is DailyTask task)) return;
+        // ── Swipe actions ────────────────────────────────────────────────────────
 
-            var newTitle = await DisplayPromptAsync("Edit Task", "Title", initialValue: task.Title, maxLength: 200);
-            if (string.IsNullOrWhiteSpace(newTitle) || newTitle == task.Title) return;
-
-            task.Title = newTitle;
-            try
-            {
-                ShowLoading();
-                await _api.UpdateDailyTaskAsync(task);
-                await LoadDailyTasks();
-                await Toast.Make("Task updated", ToastDuration.Short).Show();
-            }
-            catch (Exception)
-            {
-                await Toast.Make("Failed to update task.", ToastDuration.Short).Show();
-            }
-            finally
-            {
-                HideLoading();
-            }
-        }
-
-        // single completed toggle handler
-        private async void OnItemCompletedChanged(object sender, CheckedChangedEventArgs e)
-        {
-            if (!(sender is CheckBox cb) || !(cb.BindingContext is DailyTask task)) return;
-
-            task.IsCompleted = e.Value;
-            try
-            {
-                ShowLoading();
-                await _api.UpdateDailyTaskAsync(task);
-                await LoadDailyTasks();
-            }
-            catch (Exception)
-            {
-                await Toast.Make("Failed to update task.", ToastDuration.Short).Show();
-            }
-            finally
-            {
-                HideLoading();
-            }
-        }
-
-        // swipe -> single delete
         private async void OnItemDeleteSwipe(object sender, EventArgs e)
         {
-            if (!(sender is SwipeItem si) || !(si.BindingContext is DailyTask task)) return;
+            if (sender is not SwipeItem si || si.BindingContext is not DailyTask task) return;
 
             bool ok = await DisplayAlert("Delete", $"Delete '{task.Title}'?", "Delete", "Cancel");
             if (!ok) return;
@@ -222,10 +160,9 @@ namespace TrackYourTasks
             }
         }
 
-        // swipe -> single complete
         private async void OnItemCompleteSwipe(object sender, EventArgs e)
         {
-            if (!(sender is SwipeItem si) || !(si.BindingContext is DailyTask task)) return;
+            if (sender is not SwipeItem si || si.BindingContext is not DailyTask task) return;
 
             try
             {
@@ -245,42 +182,47 @@ namespace TrackYourTasks
             }
         }
 
+        // ── Bulk actions ─────────────────────────────────────────────────────────
+
         private async Task OnDeleteSelectedClicked()
         {
-            var ids = DailyTasks.Where(t => t.IsSelected)
-                                .Select(t => t.Id)
-                                .Where(id => !string.IsNullOrWhiteSpace(id))
-                                .ToList();
+            var ids = DailyTasks
+                .Where(t => t.IsSelected && !string.IsNullOrWhiteSpace(t.Id))
+                .Select(t => t.Id)
+                .ToList();
+
             if (!ids.Any())
             {
                 await Toast.Make("No tasks selected", ToastDuration.Short).Show();
                 return;
             }
 
-            bool ok = await DisplayAlert("Delete selected", $"Delete {ids.Count} selected tasks?", "Delete", "Cancel");
+            bool ok = await DisplayAlert(
+                "Delete selected",
+                $"Delete {ids.Count} selected task(s)?",
+                "Delete", "Cancel");
             if (!ok) return;
 
             try
             {
                 ShowLoading();
-                await _api.BulkDeleteDailyTasksAsync(ids);
+                try
+                {
+                    await _api.BulkDeleteDailyTasksAsync(ids);
+                }
+                catch
+                {
+                    // fallback: delete one by one if bulk endpoint unavailable
+                    foreach (var id in ids)
+                        await _api.DeleteDailyTaskAsync(id);
+                }
+
                 await LoadDailyTasks();
                 await Toast.Make("Deleted selected", ToastDuration.Short).Show();
             }
             catch (Exception ex)
             {
-                // fallback: try per-item deletion if server bulk endpoint not implemented
-                try
-                {
-                    foreach (var id in ids) await _api.DeleteDailyTaskAsync(id);
-                    await LoadDailyTasks();
-                    await Toast.Make("Deleted selected", ToastDuration.Short).Show();
-                }
-                catch
-                {
-                    await Toast.Make($"Failed to delete selected: {ex.Message}", ToastDuration.Long).Show();
-                    System.Diagnostics.Debug.WriteLine($"DeleteSelected failed: {ex}");
-                }
+                await Toast.Make($"Failed to delete: {ex.Message}", ToastDuration.Long).Show();
             }
             finally
             {
@@ -291,6 +233,7 @@ namespace TrackYourTasks
         private async Task OnCompleteSelectedClicked()
         {
             var selected = DailyTasks.Where(t => t.IsSelected).ToList();
+
             if (!selected.Any())
             {
                 await Toast.Make("No tasks selected", ToastDuration.Short).Show();
@@ -319,16 +262,17 @@ namespace TrackYourTasks
             }
         }
 
+        // ── Checkbox ─────────────────────────────────────────────────────────────
+
         private void OnSelectCheckBoxChanged(object sender, CheckedChangedEventArgs e)
         {
-            if (!(sender is CheckBox cb) || !(cb.BindingContext is DailyTask task)) return;
+            if (sender is not CheckBox cb || cb.BindingContext is not DailyTask task) return;
 
-            // ensure model is updated
             task.IsSelected = e.Value;
-
-            // update bulk action buttons
             UpdateBulkActionButtons();
         }
+
+        // ── Helpers ───────────────────────────────────────────────────────────────
 
         private void UpdateBulkActionButtons()
         {

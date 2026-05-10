@@ -44,5 +44,8 @@ namespace TrackYourTasks.Models
 
         [BsonIgnore]
         public string RecurrenceLabel => RecurrenceTime.HasValue ? RecurrenceTime.Value.ToLocalTime().ToString("h:mm tt") : string.Empty;
+
+        [BsonIgnore]
+        public bool HasRecurrence => RecurrenceTime != null;
     }
 }
