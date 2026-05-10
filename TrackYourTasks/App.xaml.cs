@@ -2,56 +2,76 @@
 
 namespace TrackYourTasks
 {
-	public partial class App : Application
-	{
-		private readonly IServiceProvider _services;
+    public partial class App : Application
+    {
+        private readonly IServiceProvider _services;
 
-		public App(IServiceProvider services)
-		{
-			InitializeComponent();
+        public App(IServiceProvider services)
+        {
+            InitializeComponent();
+            _services = services;
 
-			_services = services;
+            // Show spinner while checking auth
+            MainPage = new ContentPage
+            {
+                Content = new ActivityIndicator
+                {
+                    IsRunning = true,
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Center
+                }
+            };
 
-			// Temporary loading page (better UX)
-			MainPage = new ContentPage
-			{
-				Content = new ActivityIndicator
-				{
-					IsRunning = true,
-					VerticalOptions = LayoutOptions.Center,
-					HorizontalOptions = LayoutOptions.Center
-				}
-			};
+            InitializeApp();
+            Services.NotificationScheduler.ScheduleDailyNotifications();
+        }
 
-			InitializeApp();
+        private async void InitializeApp()
+        {
+            try
+            {
+                var authService = _services.GetRequiredService<GoogleAuthService>();
+                var api = _services.GetRequiredService<ApiService>();
 
-			Services.NotificationScheduler.ScheduleDailyNotifications();
-		}
+                // Step 1: Check if user is already signed in
+                bool isSignedIn = await authService.IsSignedInAsync();
 
-		private async void InitializeApp()
-		{
-			try
-			{
-				var api = _services.GetRequiredService<ApiService>();
+                if (!isSignedIn)
+                {
+                    // Not signed in → show Login page
+                    MainPage = new NavigationPage(new LoginPage(authService, api));
+                    return;
+                }
 
-				var tasks = await api.GetTasksAsync();
-				bool isAnyPendingTasks = tasks.Any(t => !t.IsCompleted);
+                // Step 2: User is signed in → go to the right page
+                await NavigateToMainApp(api);
+            }
+            catch
+            {
+                // On any error → fall back to Login page
+                var authService = _services.GetRequiredService<GoogleAuthService>();
+                var api = _services.GetRequiredService<ApiService>();
+                MainPage = new NavigationPage(new LoginPage(authService, api));
+            }
+        }
 
-				if (isAnyPendingTasks)
-				{
-					MainPage = new NavigationPage(new PendingTasksPage(api));
-				}
-				else
-				{
-					MainPage = new NavigationPage(new MainPage(api));
-				}
-			}
-			catch
-			{
-				var api = _services.GetRequiredService<ApiService>();
+        // Call this after successful login from LoginPage
+        public async Task NavigateToMainApp(ApiService api)
+        {
+            try
+            {
+                var tasks = await api.GetTasksAsync();
+                bool isAnyPendingTasks = tasks.Any(t => !t.IsCompleted);
 
-				MainPage = new NavigationPage(new MainPage(api));
-			}
-		}
-	}
+                if (isAnyPendingTasks)
+                    MainPage = new NavigationPage(new PendingTasksPage(api));
+                else
+                    MainPage = new NavigationPage(new MainPage(api));
+            }
+            catch
+            {
+                MainPage = new NavigationPage(new MainPage(api));
+            }
+        }
+    }
 }

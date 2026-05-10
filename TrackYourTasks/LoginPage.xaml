@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TrackYourTasks.LoginPage"
+    Title="Login"
+    BackgroundImageSource="background_theme.jpg">
+
+    <ContentPage.Content>
+        <VerticalStackLayout
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            Spacing="24"
+            Padding="32">
+
+            <!-- App Logo / Title -->
+            <Label
+                Text="TrackYourTasks"
+                FontSize="32"
+                FontAttributes="Bold"
+                TextColor="#1F5A40"
+                HorizontalOptions="Center" />
+
+            <Label
+                Text="Sign in to continue"
+                FontSize="16"
+                TextColor="#666666"
+                HorizontalOptions="Center" />
+
+            <!-- Google Sign-In Button -->
+            <Frame
+                CornerRadius="8"
+                Padding="0"
+                HasShadow="True"
+                BorderColor="#DADCE0"
+                BackgroundColor="White"
+                HorizontalOptions="Center">
+                <Button
+                    x:Name="GoogleSignInButton"
+                    Text="  Sign in with Google"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    TextColor="#3C4043"
+                    BackgroundColor="White"
+                    Padding="16,12"
+                    Clicked="OnGoogleSignInClicked" />
+            </Frame>
+
+            <!-- Loading indicator -->
+            <ActivityIndicator
+                x:Name="LoadingIndicator"
+                IsVisible="False"
+                IsRunning="False"
+                Color="#00BCD4"
+                HorizontalOptions="Center" />
+
+            <!-- Error message -->
+            <Label
+                x:Name="ErrorLabel"
+                Text=""
+                TextColor="Crimson"
+                FontSize="13"
+                HorizontalOptions="Center"
+                IsVisible="False" />
+
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>

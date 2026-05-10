@@ -14,7 +14,7 @@ namespace TrackYourTasks
 		{
 			var builder = MauiApp.CreateBuilder();
 
-			builder
+            builder
 				.UseMauiApp<App>()
 				.UseLocalNotification()
 				.UseMauiCommunityToolkit()
@@ -58,9 +58,11 @@ namespace TrackYourTasks
 			builder.Services.AddTransient<PendingTasksPage>();
 			builder.Services.AddTransient<AnalyticsPage>();
 			builder.Services.AddTransient<DailyTrackerPage>();
+            builder.Services.AddSingleton<GoogleAuthService>();
+            builder.Services.AddSingleton<ApiService>();
 
 #if DEBUG
-			builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
 			var app = builder.Build();
