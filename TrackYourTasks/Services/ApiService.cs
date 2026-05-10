@@ -101,12 +101,50 @@ namespace TrackYourTasks.Services
         // Return the created DailyTask returned by the API (so client can get the assigned Id)
         public async Task<DailyTask> CreateDailyTaskAsync(DailyTask task)
         {
-            var res = await _http.PostAsJsonAsync("api/dailytasks", task);
+            // send envelope { "task": { ... } } because API expects that shape
+            var payload = new { task };
+            var res = await _http.PostAsJsonAsync("api/dailytasks", payload);
             res.EnsureSuccessStatusCode();
 
-            // API returns the created DailyTask (CreatedAtAction or Ok). Read and return it.
-            var created = await res.Content.ReadFromJsonAsync<DailyTask>();
-            return created ?? task;
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            // Try to parse the response robustly: either { "task": { ... } } or the task object directly
+            try
+            {
+                var root = await res.Content.ReadFromJsonAsync<JsonElement>(options);
+                if (root.ValueKind == JsonValueKind.Object)
+                {
+                    if (root.TryGetProperty("task", out var taskEl))
+                    {
+                        var created = taskEl.Deserialize<DailyTask>(options);
+                        return created ?? task;
+                    }
+
+                    var direct = root.Deserialize<DailyTask>(options);
+                    return direct ?? task;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"CreateDailyTaskAsync: failed to parse JsonElement response: {ex}");
+            }
+
+            // fallback: try reading directly as DailyTask
+            try
+            {
+                var direct = await res.Content.ReadFromJsonAsync<DailyTask>(options);
+                return direct ?? task;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"CreateDailyTaskAsync: fallback deserialization failed: {ex}");
+            }
+
+            // if all else fails, return the original local object
+            return task;
         }
 
         public async Task UpdateDailyTaskAsync(DailyTask task)

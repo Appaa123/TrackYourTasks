@@ -48,6 +48,10 @@ namespace TrackYourTasks
             AddButton.Clicked += async (_, __) => await OnAddClicked();
             DeleteSelectedButton.Clicked += async (_, __) => await OnDeleteSelectedClicked();
             CompleteSelectedButton.Clicked += async (_, __) => await OnCompleteSelectedClicked();
+
+            // initial state
+            DeleteSelectedButton.IsEnabled = false;
+            CompleteSelectedButton.IsEnabled = false;
         }
 
         protected override async void OnAppearing()
@@ -86,6 +90,9 @@ namespace TrackYourTasks
                 foreach (var t in tasks) DailyTasks.Add(t);
 
                 EmptyLabel.IsVisible = !DailyTasks.Any();
+
+                // update bulk action buttons state
+                UpdateBulkActionButtons();
             }
             catch (Exception)
             {
@@ -99,12 +106,14 @@ namespace TrackYourTasks
 
         private async Task OnAddClicked()
         {
-            var title = await DisplayPromptAsync("New Daily Task", "Title", initialValue: string.Empty, maxLength: 200);
+            var title = await DisplayPromptAsync("New Daily Task", "Title", initialValue: string.Empty, maxLength: 20);
+            var description = await DisplayPromptAsync("Description", "Title", initialValue: string.Empty, maxLength: 200);
             if (string.IsNullOrWhiteSpace(title)) return;
 
             var newTask = new DailyTask
             {
                 Title = title,
+                Description = description,
                 CreatedAt = DateTime.UtcNow,
                 IsCompleted = false
             };
@@ -127,6 +136,9 @@ namespace TrackYourTasks
                 }
 
                 await Toast.Make("Task added", ToastDuration.Short).Show();
+
+                // ensure bulk button states are correct after adding
+                UpdateBulkActionButtons();
             }
             catch (Exception)
             {
@@ -235,7 +247,10 @@ namespace TrackYourTasks
 
         private async Task OnDeleteSelectedClicked()
         {
-            var ids = DailyTasks.Where(t => t.IsSelected).Select(t => t.Id).Where(id => !string.IsNullOrWhiteSpace(id)).ToList();
+            var ids = DailyTasks.Where(t => t.IsSelected)
+                                .Select(t => t.Id)
+                                .Where(id => !string.IsNullOrWhiteSpace(id))
+                                .ToList();
             if (!ids.Any())
             {
                 await Toast.Make("No tasks selected", ToastDuration.Short).Show();
@@ -252,7 +267,7 @@ namespace TrackYourTasks
                 await LoadDailyTasks();
                 await Toast.Make("Deleted selected", ToastDuration.Short).Show();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // fallback: try per-item deletion if server bulk endpoint not implemented
                 try
@@ -263,7 +278,8 @@ namespace TrackYourTasks
                 }
                 catch
                 {
-                    await Toast.Make("Failed to delete selected.", ToastDuration.Short).Show();
+                    await Toast.Make($"Failed to delete selected: {ex.Message}", ToastDuration.Long).Show();
+                    System.Diagnostics.Debug.WriteLine($"DeleteSelected failed: {ex}");
                 }
             }
             finally
@@ -301,6 +317,24 @@ namespace TrackYourTasks
             {
                 HideLoading();
             }
+        }
+
+        private void OnSelectCheckBoxChanged(object sender, CheckedChangedEventArgs e)
+        {
+            if (!(sender is CheckBox cb) || !(cb.BindingContext is DailyTask task)) return;
+
+            // ensure model is updated
+            task.IsSelected = e.Value;
+
+            // update bulk action buttons
+            UpdateBulkActionButtons();
+        }
+
+        private void UpdateBulkActionButtons()
+        {
+            var anySelected = DailyTasks.Any(t => t.IsSelected);
+            DeleteSelectedButton.IsEnabled = anySelected;
+            CompleteSelectedButton.IsEnabled = anySelected;
         }
     }
 }

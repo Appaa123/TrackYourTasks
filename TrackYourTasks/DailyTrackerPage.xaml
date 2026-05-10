@@ -7,17 +7,33 @@
     BackgroundImageSource="background_theme.jpg">
 
     <ContentPage.Content>
-        <Grid x:Name="RootGrid" RowDefinitions="Auto,*,Auto" Padding="12" RowSpacing="12">
+        <Grid x:Name="RootGrid" RowDefinitions="Auto,Auto,*,Auto" Padding="12" RowSpacing="12">
             <!-- Header -->
-            <StackLayout Orientation="Horizontal" Spacing="8" HorizontalOptions="FillAndExpand">
+            <Frame
+                Grid.Row="0"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                Padding="8,6"
+                CornerRadius="8"
+                HasShadow="False"
+                BackgroundColor="#89C38C"
+                BorderColor="#5E8D60">
+                <Label
+                    Text="Daily Tasks"
+                    FontAttributes="Bold"
+                    FontSize="25"
+                    TextColor="#FFFFFF"
+                    HorizontalOptions="Center" />
+            </Frame>
+
+            <StackLayout  Grid.Row="1" Orientation="Horizontal" Spacing="8" HorizontalOptions="FillAndExpand">
                 <Button Text="Add" x:Name="AddButton" />
-                <Button Text="Complete Selected" x:Name="CompleteSelectedButton" />
-                <Button Text="Delete Selected" x:Name="DeleteSelectedButton" />
-                <Label Text="Daily Tasks" VerticalOptions="Center" HorizontalOptions="EndAndExpand" />
+                <Button Text="Complete Selected" x:Name="CompleteSelectedButton" IsEnabled="False" />
+                <Button Text="Delete Selected" x:Name="DeleteSelectedButton" IsEnabled="False" />
             </StackLayout>
 
             <!-- Tasks list -->
-            <CollectionView x:Name="TasksCollection" Grid.Row="1" SelectionMode="None" ItemsLayout="VerticalList">
+            <CollectionView x:Name="TasksCollection" Grid.Row="2" SelectionMode="None" ItemsLayout="VerticalList">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <SwipeView>
@@ -32,53 +48,58 @@
                                 </SwipeItems>
                             </SwipeView.RightItems>
 
-                            <!-- Clean tile: only one left selection checkbox and one right completed checkbox -->
-                            <Grid Padding="8" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
-                                <!-- left: selection checkbox -->
-                                <CheckBox
-                                    Grid.Column="0"
-                                    IsChecked="{Binding IsSelected}"
-                                    VerticalOptions="Center"
-                                    AutomationId="SelectCheckBox" />
+                            <!-- Tile: light orange frame with inner content -->
+                            <Frame BackgroundColor="#FAEEC9" CornerRadius="8" Padding="8" Margin="0,6" HasShadow="False">
+                                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+                                    <!-- left: selection checkbox -->
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                        VerticalOptions="Center"
+                                        AutomationId="SelectCheckBox"
+                                        Color="Orange"
+                                        CheckedChanged="OnSelectCheckBoxChanged" />
 
-                                <!-- center: title/description/meta -->
-                                <StackLayout Grid.Column="1" Spacing="4" Margin="8,0" VerticalOptions="Center">
-                                    <Label
-                                        Text="{Binding Title, TargetNullValue='(no title)'}"
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        TextColor="{StaticResource PrimaryDarkText}" />
+                                    <!-- center: title/description/meta -->
+                                    <StackLayout Grid.Column="1" Spacing="4" Margin="8,0" VerticalOptions="Center">
+                                        <Label
+                                            Text="{Binding Title, TargetNullValue='(no title)'}"
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            TextColor="{StaticResource PrimaryDarkText}" />
 
-                                    <Label
-                                        Text="{Binding Description, TargetNullValue=''}"
-                                        FontSize="13"
-                                        TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
-                                        LineBreakMode="TailTruncation" />
+                                        <Label
+                                            Text="{Binding Description, TargetNullValue=''}"
+                                            FontSize="13"
+                                            TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
+                                            LineBreakMode="TailTruncation" />
 
-                                    <StackLayout Orientation="Horizontal" Spacing="12">
-                                        <Label Text="{Binding CreatedAtLabel}" FontSize="11"
-                                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray300}}" />
-                                        <Label Text="{Binding RecurrenceLabel}" FontSize="11"
-                                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray300}}"
-                                               IsVisible="{Binding RecurrenceTime, Converter={StaticResource NullToBoolConverter}}" />
+                                        <StackLayout Orientation="Horizontal" Spacing="12">
+                                            <Label Text="{Binding CreatedAtLabel}" FontSize="11"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray300}}" />
+                                            <Label Text="{Binding RecurrenceLabel}" FontSize="11"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray300}}"
+                                                   IsVisible="{Binding RecurrenceTime, Converter={StaticResource NullToBoolConverter}}" />
+                                        </StackLayout>
                                     </StackLayout>
-                                </StackLayout>
 
-                                <!-- right: single completed checkbox -->
-                                <CheckBox
-                                    Grid.Column="2"
-                                    IsChecked="{Binding IsCompleted}"
-                                    VerticalOptions="Center"
-                                    CheckedChanged="OnItemCompletedChanged"
-                                    AutomationId="CompletedCheckBox" />
-                            </Grid>
+                                    <!-- right: completed indicator (replaces CheckBox) -->
+                                    <Label Grid.Column="2"
+                                           Text="✓"
+                                           FontSize="18"
+                                           TextColor="ForestGreen"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="Center"
+                                           IsVisible="{Binding IsCompleted}" />
+                                </Grid>
+                            </Frame>
                         </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
             <!-- Footer helper -->
-            <Label Grid.Row="2" x:Name="EmptyLabel" Text="No daily tasks found." HorizontalOptions="Center" IsVisible="False" />
+            <Label Grid.Row="3" x:Name="EmptyLabel" Text="No daily tasks found." HorizontalOptions="Center" IsVisible="False" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

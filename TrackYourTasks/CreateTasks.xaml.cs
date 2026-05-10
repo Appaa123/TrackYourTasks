@@ -4,6 +4,12 @@ using Plugin.LocalNotification;
 using TrackYourTasks.Models;
 using TrackYourTasks.Services;
 using Microsoft.Maui.Controls;
+using System;
+
+#if ANDROID
+using Android.App;
+using TrackYourTasks.Platforms.Android.Services;
+#endif
 
 namespace TrackYourTasks
 {
@@ -147,7 +153,21 @@ namespace TrackYourTasks
                     ReturningData = "PendingTasksPage"
                 };
 
+                // Keep plugin notification for in-process behavior
                 await LocalNotificationCenter.Current.Show(request);
+
+#if ANDROID
+                // Ensure notifyTime is local and schedule an AlarmManager alarm so the reminder fires even if the app is killed
+                var localNotify = DateTime.SpecifyKind(notifyTime, DateTimeKind.Local);
+                var label = request.Title ?? "TaskReminder";
+
+                global::TrackYourTasks.Platforms.Android.Services.AlarmScheduler.ScheduleAlarm(
+                    global::Android.App.Application.Context,
+                    localNotify,
+                    label,
+                    notificationId
+                );
+#endif
 
                 await Navigation.PopAsync();
             }
